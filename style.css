@@ -1,0 +1,12 @@
+.reveal code {
+	font-family: Iosevka Term, monospace;
+}
+
+.reveal pre code {
+	font-size: 22px;
+	line-height: 24px;
+}
+
+.paragraph.medium p {
+	font-size: 0.8em;
+}

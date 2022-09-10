@@ -1,0 +1,21 @@
+GIT
+  remote: https://github.com/asciidoctor/asciidoctor-reveal.js.git
+  revision: 547c8e0c0ef58ff89e6d23b35f2480479a174f42
+  tag: v5.0.0-rc.1
+  specs:
+    asciidoctor-revealjs (5.0.0.rc1)
+      asciidoctor (>= 2.0.0, < 3.0.0)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    asciidoctor (2.0.17)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  asciidoctor-revealjs!
+
+BUNDLED WITH
+   1.17.2
