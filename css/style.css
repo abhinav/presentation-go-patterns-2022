@@ -1,5 +1,13 @@
+@font-face {
+	font-family: "Iosevka";
+	src: url("../fonts/iosevka-regular-minimal.woff2") format("woff2");
+	font-weight: normal;
+	font-style: normal;
+	font-display: swap;
+}
+
 .reveal code {
-	font-family: Iosevka Term, monospace;
+	font-family: "Iosevka", monospace;
 }
 
 .reveal pre code {

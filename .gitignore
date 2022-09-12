@@ -2,3 +2,4 @@
 /node_modules
 /.asciidoctor/diagram
 /images
+/_site
