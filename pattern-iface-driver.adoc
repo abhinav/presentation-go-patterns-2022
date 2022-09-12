@@ -9,29 +9,166 @@ Let me first explain the pattern at a high level,
 and then I'll demonstrate with code.
 --
 
-== Overview
+[%auto-animate%conceal]
+== Driver interface diagram
+
+[mermaid,data-id=img]
+....
+flowchart LR
+  subgraph Driver
+    WriteBytes
+  end
+....
 
 [.notes]
 --
-In this pattern, 
+In this pattern, you start with a "Driver" interface
+with the most minimal API.
 --
 
-== Example
+[%auto-animate%conceal]
+== Driver interface diagram
+
+[mermaid,data-id=img]
+....
+flowchart LR
+  subgraph Writer
+    WriteBytesOut[WriteBytes]
+  end
+
+  subgraph Driver
+    WriteBytes
+  end
+
+  WriteBytesOut --> WriteBytes
+....
+
+[.notes]
+--
+You build a struct around it, say, Writer,
+that provides roughly the same API.
+
+But then on top of that, you can add other functionality
+that depends on the small interface.
+--
+
+[%auto-animate%conceal]
+== Driver interface diagram
+
+[mermaid,data-id=img]
+....
+flowchart LR
+  subgraph Writer
+    WriteBytesOut[WriteBytes]
+    WriteString
+  end
+
+  subgraph Driver
+    WriteBytes
+  end
+
+  WriteBytesOut & WriteString --> WriteBytes
+....
+
+[.notes]
+--
+This is similar to exporting a top-level function,
+except it still provides all methods on the same object.
+
+Let me demonstrate with code quickly.
+--
+
+[%auto-animate%auto-animate-restart%conceal]
+== Driver interface intro
 
 [source,go]
 ----
-type Writer interface {
+type Driver interface {
   WriteBytes([]byte) error
 }
 ----
 
-[source,go]
+[source%linenums,go,data-id=writer]
 ----
-type WriterDriver interface {
-  WriteBytes([]byte) error
+type Writer struct{ drv Driver }
+
+func (w *Writer) WriteBytes(bs []byte) error {
+  return w.drv.WriteBytes(bs)
+}
+----
+
+[.notes]
+--
+I start with a Writer struct that has the same interface
+as the driver.
+--
+
+[%auto-animate%conceal]
+== Driver interface intro
+
+[source%linenums,go,data-id=writer]
+----
+type Writer struct{ drv Driver }
+
+func (w *Writer) WriteBytes(bs []byte) error {
+  return w.drv.WriteBytes(bs)
 }
 
-type Writer struct {
-  Driver WR
+func (w *Writer) WriteString(bs []byte) error {
+  return w.WriteBytes([]string(bs))
 }
 ----
+
+[.notes]
+--
+And then I do the same thing I did with the
+top-level WriteString function earlier,
+but as a method.
+
+I can support upcasting on this interface too!
+--
+
+[%auto-animate%conceal]
+== Driver interface intro
+
+[source%linenums,go,data-id=writer]
+----
+type Writer struct{ drv Driver }
+
+func (w *Writer) WriteBytes(bs []byte) error {
+  return w.drv.WriteBytes(bs)
+}
+
+type StringWriter interface {
+  WriteString(string) error
+}
+
+func (w *Writer) WriteString(bs []byte) error {
+  if sw, ok := w.(StringWriter); ok {
+    return sw.WriteString(s)
+  }
+  return w.WriteBytes([]string(bs))
+}
+----
+
+[.notes]
+--
+So I'm sort of able to give my users the best of both worlds.
+--
+
+[%conceal]
+== Driver interface benefits
+
+*Benefits*
+
+* Implement a small interface
+* Consume a large surface
+
+[.notes]
+--
+Users that want to implement the interface
+only have to implement as little of it as they need.
+
+Users that want to *consume* the functionality provided by it,
+can consume the struct and get a much richer API.
+--
