@@ -24,21 +24,17 @@ include::patterns.adoc[leveloffset=+1]
 
 == Practices
 
-== Object Initialization
+// == Object Initialization
 
-* Always fully hydrates
-* Constructor
-* sync.Once pattern?
+// * Always fully hydrates
+// * Constructor
+// * sync.Once pattern?
 
-[.notes]
---
---
+// == Goroutine management
 
-== Goroutine management
-
-* Always control the lifetime
-* Don't fire and forget
-* No unstoppable background worker
+// * Always control the lifetime
+// * Don't fire and forget
+// * No unstoppable background worker
 
 // TODO: worker pool, stop method, etc.
 
@@ -58,13 +54,13 @@ include::patterns.adoc[leveloffset=+1]
 * Handle the error
 * Propagate the error
 
-== Handle errors
+=== Handle errors
 
 * match the error with errors.Is
 * extract information with errors.As
 * log the error
 
-== Propagate errors
+=== Propagate errors
 
 * return as-is
 * add context with fmt.Errorf, use %w
