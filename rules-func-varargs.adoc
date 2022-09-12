@@ -1,0 +1,64 @@
+[.columns]
+= Variadic arguments
+
+[.column]
+--
+[source,diff]
+----
+ func ListPosts(
+   ctx context.Context,
++  skipAuthors ...string
+ ) ([]*Post, error)
+----
+
+This is fine, right?
+
+[source,go]
+----
+posts, err := ListPosts(ctx)
+if err != nil {
+  // ...
+}
+----
+
+[step=1]
+Nope!
+--
+
+[.column.is-three-fifths,step=1]
+--
+[source,go]
+----
+func Process(
+  ctx context.Context,
+  listPosts func(...) ([]*Post, error)
+) {
+  posts, err := listPosts(ctx)
+  // ...
+}
+----
+
+Breaks function references
+
+[source,go]
+----
+Process(ctx, ListPosts)
+// ERROR:
+// want func(Context) (...)
+//  got func(Context, ...string) (...)
+----
+--
+
+[.notes]
+--
+Aha, some of you might be thinking.
+What if I add variadic arguments to a function?
+Surely, that's a backwards compatible change?
+Surely, that won't break anyone.
+
+Wrong.
+Go supports function references.
+When you pass a function reference,
+the type is usually inferred.
+Changing that type is a breaking change.
+--

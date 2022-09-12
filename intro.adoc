@@ -1,0 +1,21 @@
+= Hi
+
+[.text-left]
+I'm Abhinav.
+
+[.text-center]
+I work on Go frameworks.
+
+[.text-right]
+Let's talk about writing Go.
+
+[.notes]
+--
+Hey folks, I'm Abhinav.
+
+I lead the Go Platform team.
+We own things like Fx, Glue, CFF2, Zap, etc.
+
+Today I'll talk to you about writing good Go.
+--
+

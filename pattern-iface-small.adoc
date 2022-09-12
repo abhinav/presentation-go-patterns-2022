@@ -1,0 +1,64 @@
+[.columns.wrap]
+= Keep interfaces small
+
+[.column]
+--
+Bad
+
+[source,go]
+----
+type Writer interface {
+  WriteBytes([]byte) error
+  WriteString(string) error
+}
+
+func (w *myWriter) WriteString(
+  s string,
+) error {
+  return w.WriteBytes([]byte(s))
+}
+----
+--
+
+[.column,step=1]
+--
+Good
+
+[source,go]
+----
+type Writer interface {
+  WriteBytes([]byte) error
+}
+
+func WriteString(
+  w Writer, s string,
+) error {
+  return w.WriteBytes([]byte(s))
+}
+----
+--
+
+[.column.is-full,step=1]
+No helper methods -- use functions
+
+[.notes]
+--
+Well, the first thing we do is we keep them small.
+
+In this example,
+nearly every implementation of WriteString will
+have that exact same body.
+Convert the string to bytes, and use WriteBytes.
+
+This does not need to be a method on the interface.
+Move it into a top level function.
+
+Besides making your interface smaller,
+this also avoids the need to copy paste
+the same implementation of WriteString everywhere.
+
+Okay that might have you wondering,
+but what about the few cases where WriteString
+is not implemented in terms of WriteBytes?
+Don't I lose the ability to override that behavior.
+--

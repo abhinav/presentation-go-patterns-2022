@@ -1,0 +1,50 @@
+= Rules
+
+:rule-exported: Exported means forever
+:rule-functions: Function types are fixed
+:rule-interfaces: Interfaces are immutable
+
+. {rule-exported}
+. {rule-functions}
+. {rule-interfaces}
+
+[.notes]
+--
+First, let's establish some rules for writing code.
+These rules motivate the designs we'll discuss later.
+
+These rules apply only to libraries,
+but we tend to write most our code to meet these constraints.
+If it's not part of core application logic, treat it like a library.
+
+The rules are:
+
+* Exported means forever
+* Function types are fixed
+* Interfaces are immutable
+
+Let me quickly elaborate a bit on each.
+--
+
+include::rules-export.adoc[]
+include::rules-func.adoc[]
+include::rules-iface.adoc[]
+
+= Rules
+
+. {rule-exported}
+. {rule-functions}
+. {rule-interfaces}
+
+[.notes]
+--
+So to summarize, here are the rules again.
+
+* Don't take away something you've given
+* Don't change function signatures
+* Don't change *anything* about interfaces
+
+Okay, so we have some rules.
+How do we operate inside them?
+What patterns can we use to make sure we don't break them?
+--

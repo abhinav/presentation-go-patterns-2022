@@ -1,0 +1,51 @@
+[.columns.is-vcentered.wrap%conceal]
+= Why are functions types fixed
+
+[.column.is-two-thirds]
+[source,diff]
+----
+ func DeleteUser(
+   ctx context.Context,
+   name string,
++  softDelete bool,
+ ) (...)
+----
+
+[.column.is-one-third]
+adding a parameter
+
+[.column.is-two-thirds]
+[source,diff]
+----
+ func DeleteUser(...) (
+  deleted bool,
++ uuid uuid.UUID,
+  err  error,
+ )
+----
+
+[.column.is-one-third]
+or a return value
+
+[.column.is-two-thirds]
+[source,go]
+----
+// ERROR
+// - missing parameter: softDelete
+// - cannot assign 3 values to 2 variables
+deleted, err := DeleteUser(ctx, name)
+if err != nil {
+  // ...
+}
+----
+
+[.column.is-one-third]
+breaks existing callers
+
+[.notes]
+--
+Again, this should be obvious but I'll explain anyway.
+You can't modify a function signature
+because every modification you make
+will break existing callers.
+--

@@ -1,0 +1,58 @@
+[.columns]
+= Parameter Objects
+
+[.column]
+--
+[source,diff]
+----
+ type DeleteUserRequest struct {
+   Name       string
++  SoftDelete bool
+ }
+----
+
+[source,go]
+----
+func DeleteUser(
+  ctx context.Context,
+  req DeleteUserRequest,
+) (...) {
+  // ...
+}
+----
+--
+
+[.column.text-left]
+--
+`struct` *exclusively* for parameters except `Context`
+
+[.medium]
+New *optional* fields
+
+[%step.small]
+Need more than 3 parameters? +
+Use a `struct`.
+--
+
+[.notes]
+--
+The first tool you can use here is parameter objects.
+
+That's just another way of saying that you should
+define a struct *specifically* for your function's parameters.
+This is important.
+This struct is not for sharing with other functions.
+This is not a general purpose "params" struct,
+but a struct whose sole purpose is to plumb arguments to this function.
+
+All arguments except context, that is.
+That remains the first argument to your function.
+
+You can add new *optional* fields to this struct.
+That's completely backwards compatible.
+
+As a general rule of thumb:
+if your function takes more than three parameters,
+it will inevitably need more.
+Use a struct.
+--

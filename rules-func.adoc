@@ -1,0 +1,23 @@
+[.columns.is-vcentered]
+= {rule-functions}
+
+[.column]
+Cannot modify
+
+[.column.medium]
+function +
+or +
+method
+
+[.column]
+signatures
+
+[.notes]
+--
+Function types are fixed.
+
+You cannot make any changes to a function or method signature.
+--
+
+include::rules-func-why.adoc[leveloffset=+1]
+include::rules-func-varargs.adoc[leveloffset=+1]

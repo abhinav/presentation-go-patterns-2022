@@ -1,0 +1,23 @@
+= Agenda
+
+* Rules
+** Why
+* Patterns
+** How
+
+TODO: more
+
+[.notes]
+--
+The agenda for this talk is roughly this,
+
+* First, we'll discuss some rules we're operating under
+  for good, maintainable packages and libraries,
+  and why those rules make sense.
+* Next, we'll talk about some patterns we can use to operate
+  inside these rules, and how to use them.
+
+TODO
+
+Okay, let's get started.
+--

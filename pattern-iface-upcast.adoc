@@ -1,0 +1,203 @@
+[%auto-animate]
+= Upcast to upgrade
+
+[.notes]
+--
+Not quite. The next technique you can use here is upcasting.
+--
+
+[%conceal]
+== Upcasting intro
+
+[source%linenums,go,data-id=writer]
+----
+type Writer interface {
+  WriteBytes([]byte) error
+}
+
+func WriteString(w Writer, s string) error {
+  return w.WriteBytes([]byte(s))
+}
+----
+
+[.notes]
+--
+So I have my Writer interface that supports bytes,
+and my WriteString function that lets me use
+Writers to write strings.
+
+How do I add the ability for *some* implementations of the interface
+to provide an alternative WriteString implementation?
+--
+
+[%auto-animate]
+== Add a new interface
+
+[source%linenums,go,data-id=writer]
+----
+type Writer interface {
+  WriteBytes([]byte) error
+}
+
+type StringWriter interface {
+  WriteString(string) error
+}
+
+func WriteString(w Writer, s string) error {
+  return w.WriteBytes([]byte(s))
+}
+----
+
+[.notes]
+--
+First, I add a *new* interface that matches the signature of the function.
+
+This is the interface we want Writers to implement if they want to upgrade.
+--
+
+[%auto-animate]
+== Upcast and use implementation
+
+[source%linenums,go,data-id=writer]
+----
+type Writer interface {
+  WriteBytes([]byte) error
+}
+
+type StringWriter interface {
+  WriteString(string) error
+}
+
+func WriteString(w Writer, s string) error {
+  if sw, ok := w.(StringWriter); ok {
+    return sw.WriteString(s)
+  }
+  return w.WriteBytes([]byte(s))
+}
+----
+
+[.notes]
+--
+Next, the helper function upcasts to the new interface.
+*If* the given writer implements StringWriter, use that implementation.
+Otherwise, fall back to the WriteBytes-based implementation.
+
+This is a pretty simple technique, and you can see it used in many places in
+the standard library.
+As an example, let's look at the io/fs package.
+--
+
+[%auto-animate]
+== io/fs
+
+[source,go,data-id=fs]
+----
+type FS interface{
+  Open(string) (File, error)
+}
+----
+
+[%step]
+[source,go]
+----
+type StatFS interface {
+  FS
+
+  Stat(string) (FileInfo, error)
+}
+
+func Stat(fs FS, name string) (FileInfo, error) {
+  if sf, ok := fs.(StatFS); ok {
+    return sf.Stat(name)
+  }
+
+  f, err := fs.Open(name)
+  // ...
+  return f.Stat()
+}
+----
+
+[.notes]
+--
+io/fs defines a simple FS interface.
+It can only open a file and nothing else.
+
+However, given that ability, you can "stat" a file -- inspect it -- with an
+optional upgrade where you don't have to open it to stat it.
+--
+
+[%auto-animate]
+== io/fs
+
+[source,go,data-id=fs]
+----
+type FS interface{
+  Open(string) (File, error)
+}
+----
+
+[source,go]
+----
+type ReadFileFS interface {
+  FS
+
+  ReadFile(string) ([]byte, error)
+}
+
+func ReadFile(fs FS, name string) ([]byte, error) {
+  if rf, ok := fs.(ReadFileFS); ok {
+    return rf.ReadFile(name)
+  }
+
+  f, err := fs.Open(name)
+  // ...
+  return io.ReadAll(f)
+}
+----
+
+[.notes]
+--
+You can read from the file,
+again, with an optional upgrade path.
+
+Note that this is not the actual implementation,
+but you should get the idea.
+
+And you can do other things -- I'm not gonna list all here.
+--
+
+[%conceal]
+== Upcast to upgrade summary
+
+*Summary*
+
+* DRY implementation
+* Guaranteed fallback behavior
+* No internal state
+* Wrapping can break overrides
+
+[.notes]
+--
+In summary, besides keeping your interface small,
+this pattern
+
+* Keeps your implementation DRY:
+  don't implement this method if you don't need to override its behavior.
+  Kinda like method inheritance, but not really.
+* You're guaranteed to have a fallback behavior
+  if you don't override.
+* However, these methods cannot access or write any internal state.
+  Like, if your WriteString wanted to, say, pool the byte slices it was using
+  in a field somewhere, it cannot do that because there's nowhere to place that
+  field.
+* Lastly, the biggest weakness of this system is that if someone wraps an
+  implementation of an interface, and they do not include the optional upgrade
+  methods, the upgrade will be lost -- callers will always use the fallback
+  behavior.
+
+Overall, this pattern is still great, and I suggest using it for small
+interfaces with not too many upgrades.
+
+But there are places where this doesn't fit.
+That's where the next one comes in.
+--

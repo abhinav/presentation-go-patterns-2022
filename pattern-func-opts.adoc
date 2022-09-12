@@ -1,0 +1,149 @@
+= Functional Options
+
+[.notes]
+--
+Lastly there are functional options.
+--
+
+
+[.columns%auto-animate%conceal]
+== Functional Options Intro
+
+[.column]
+[source%linenums,go,data-id=decls]
+----
+type Option /* ... */
+
+func SkipAuthors(
+  names ...string,
+) Option { /* ... */ }
+
+func ListPosts(
+  ctx context.Context,
+  opts ...Option,
+) ([]*Post, error)
+----
+
+[.column]
+[source%linenums,go,data-id=usage]
+----
+ListPosts(ctx)
+
+ListPosts(ctx,
+  SkipAuthors(...),
+)
+----
+
+[.notes]
+--
+With functional options, you define an opaque `Option` type.
+Users cannot construct these except by using
+functions that you provide.
+
+The function accepts a variable number of these
+and interprets them "internally".
+Users can pass them or not.
+--
+
+[.columns%auto-animate%conceal]
+== Functional Options Intro
+
+[.column]
+[source%linenums,go,data-id=decls]
+----
+type Option /* ... */
+
+func SkipAuthors(
+  names ...string,
+) Option { /* ... */ }
+
+func Archived(
+  bool,
+) Option { /* ... */ }
+
+func ListPosts(
+  ctx context.Context,
+  opts ...Option,
+) ([]*Post, error)
+----
+
+[.column]
+[source%linenums,go,data-id=usage]
+----
+ListPosts(ctx)
+
+ListPosts(ctx,
+  Archived(true),
+  SkipAuthors(...),
+)
+
+ListPosts(ctx,
+  Archived(false),
+)
+----
+
+[.notes]
+--
+You can add new options and again,
+users can pass them or not.
+
+You can go pretty wild with the number of options.
+--
+
+[%conceal]
+== Functional Options Benefits
+
+=== Benefits
+
+* Zero argument defaults
+* Lots of customization
+
+[.notes]
+--
+Functional options are good candidates for cases where
+there's a good zero option default behavior
+and you want freedom to add tonnes of options on top.
+--
+
+include::pattern-func-opts-impl.adoc[leveloffset=+1]
+
+[%conceal]
+== Functional Options Summary
+
+*Summary*
+
+* Add new parameters or results
+* Compose options together
++
+[%step]
+[source,go]
+----
+func(...Option) Option
+----
+
+High flexibility and high boilerplate
+
+[.notes]
+--
+*Whew*.
+That was a lot.
+In summary. Functional options let you do a lot.
+
+* add new parameters or results, or
+* compose options together (like, take N options, combine them into one)
+* in general they're very flexible
+* but they also come with a lot of boilerplate
+
+Use them only when the boilerplate is worth it.
+
+As an aside, I mentioned that there are other ways to implement functional
+options.
+For example, you can use function pointers and that's less boilerplate,
+but still quite a bit.
+But function pointers loses some nice properties of the interface based
+approach when it comes to debugging and testing
+that I don't have time to cover right now.
+
+Just for now:
+if you're gonna do functional options, prefer the interface based approach.
+--

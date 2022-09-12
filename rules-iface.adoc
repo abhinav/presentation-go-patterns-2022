@@ -1,0 +1,27 @@
+[.columns.is-vcentered]
+= {rule-interfaces}
+
+[.column]
+Cannot
+
+[.column.medium]
+modify +
+remove +
+*add*
+
+[.column]
+methods
+
+[.notes]
+--
+Finally, interfaces are immutable.
+
+You cannot modify or remove methods.
+The reasons are the same as the last two sections.
+
+However, the third one can be surprising.
+You also cannot add methods.
+Why?
+--
+
+include::rules-iface-why.adoc[leveloffset=+1]

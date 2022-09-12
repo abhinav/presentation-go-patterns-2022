@@ -1,0 +1,40 @@
+= {rule-functions}
+
+How to plan for expansion?
+
+[.notes]
+--
+So function types are fixed.
+You can't change them.
+How can you plan for expansion?
+
+There are three primary methods.
+--
+
+include::pattern-func-param.adoc[leveloffset=+1]
+include::pattern-func-result.adoc[leveloffset=+1]
+include::pattern-func-opts.adoc[]
+
+= Plan for function expansion
+
+Parameter Objects +
+Result Objects +
+Functional Options +
+[.step]#New Functions#
+
+[.notes]
+--
+Okay, so to plan for function expansion,
+you have parameter objects,
+result objects,
+and functional options.
+
+Anything else?
+
+Yes!
+If all else fails,
+you can always just write a new function.
+... except if you're inside an interface.
+
+Which brings me to our next topic.
+--

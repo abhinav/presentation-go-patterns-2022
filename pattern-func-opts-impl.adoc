@@ -1,0 +1,208 @@
+= How to implement functional options
+
+[.notes]
+--
+There are a couple ways to implement functional options.
+I'll go over the one I recommend.
+--
+
+[.columns%auto-animate]
+= Setup
+
+[.column.is-half]
+[source%linenums,go,data-id=def]
+----
+type options struct {
+}
+
+type Option interface {
+  apply(*options)
+}
+----
+
+[.notes]
+--
+To implement functional options,
+define an *unexported* options struct,
+a public Option interface,
+and add an *unexported* method on this interface
+that accepts a pointer to that struct.
+
+The unexported method on the interface "seals"
+this interface.
+Nobody outside this package can implement this interface.
+--
+
+[.columns%auto-animate]
+= Add an option
+
+[.column]
+[source%linenums,go,data-id=def]
+----
+type options struct {
+  skipAuthors []string
+}
+
+type Option interface {
+  apply(*options)
+}
+----
+
+[.column]
+[source,go]
+----
+func SkipAuthors(
+  xs ...string,
+) Option {
+  return skipAuthors(xs)
+}
+
+type skipAuthors []string
+
+func (o skipAuthors) apply(...) {
+  opts.skipAuthors = []string(o)
+}
+----
+
+[.notes]
+--
+* Add a field to this struct for the option.
+* Build an implementation of the interface,
+  that sets this option on the struct.
+* Return that implementation from the option constructor.
+--
+
+[.columns%auto-animate]
+= Add other options
+
+[.column]
+[source%linenums,go,data-id=def]
+----
+type options struct {
+  skipAuthors []string
+  archived    bool
+  postedAfter time.Time
+}
+
+type Option interface {
+  apply(*options)
+}
+----
+
+[.column]
+[source,go]
+----
+func SkipAuthors(
+  xs ...string,
+) Option { /* ... */ }
+
+func Archived(
+  archived bool,
+) Option { /* ... */ }
+
+func PostedAfter(
+  postedAfter date.Date,
+) Option { /* ... */ }
+----
+
+[.notes]
+--
+Do this for every option.
+--
+
+[.columns%auto-animate]
+= Consume the options
+
+[.column.is-half]
+[source%linenums,go,data-id=def]
+----
+type options struct {
+  skipAuthors []string
+  archived    bool
+  postedAfter time.Time
+}
+
+type Option interface {
+  apply(*options)
+}
+----
+
+[.column]
+[source,go]
+----
+func ListPosts(
+  ctx context.Context,
+  os ...Option,
+) (...) {
+  var opts options
+  for _, o := range os {
+    o.apply(&opts)
+  }
+  if opts.archived {
+    // ...
+  }
+----
+
+[.notes]
+--
+Finally, in your function,
+compile these options into the final options struct.
+And consume the result.
+
+Lastly, one more cool thing about functional options.
+These are not just for accepting new optional parameters.
+In a pinch, you can also use them to produce new optional results.
+--
+
+[.columns%auto-animate]
+= Return new results
+
+[.column]
+[source%linenums,go,data-id=def]
+----
+type options struct {
+  skipAuthors []string
+  archived    bool
+  postedAfter time.Time
+  queryStats *Stats
+}
+
+type Stats struct {
+  Elapsed time.Duration
+  /* ... */
+}
+
+func QueryStats(*Stats) Option {
+  /* ... */
+}
+----
+
+[.column]
+[source,go]
+----
+var stats Stats
+posts, err := ListPosts(ctx,
+  QueryStats(&stats),
+)
+if err != nil {
+  // ...
+}
+
+log.Printf(
+  "Query took %v", stats.Elapsed)
+// Output:
+// Query took 100ms
+----
+
+[.notes]
+--
+To do this, you add an option that accepts a pointer to the variable
+that should be filled with the results.
+
+In this example, I'm adding an option that calculates statistics
+about the SQL query my system ran and posts them to the given struct.
+
+This is especially useful if the optional result requires extra work
+that you'd rather not do if the caller doesn't want it.
+If the pointer is nil, don't calculate the statistics.
+--

@@ -1,0 +1,53 @@
+[.columns.wrap%conceal]
+= Why you cannot add methods to an interface
+
+[.column.is-full]
+Adding methods to an interface
+
+[.column]
+[source,diff]
+----
+ type Writer interface {
+   WriteBytes([]byte) error
++  WriteString(string) error
+ }
+----
+
+[.column]
+[source,go]
+----
+func WriteTo(w Writer) error {
+  // ...
+}
+----
+
+[.column.is-full]
+breaks existing implementations
+
+[.column]
+[source,go]
+----
+type myWriter struct{ /* ... */ }
+
+func (w *myWriter) WriteBytes(
+  b []byte,
+) error {
+  // ...
+}
+----
+
+[.column]
+[source,go]
+----
+// ERROR:
+// does not implement WriteString
+err := WriteTo(&myWriter{...})
+if err != nil {
+  // ...
+}
+----
+
+[.notes]
+--
+Adding new methods to an interface breaks existing implementations.
+--

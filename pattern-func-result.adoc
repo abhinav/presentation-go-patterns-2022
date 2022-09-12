@@ -1,0 +1,51 @@
+[.columns]
+= Result Objects
+
+[.column]
+--
+[source,diff]
+----
+ type DeleteUserResponse struct {
+   Deleted bool
++  UUID    uuid.UUID
+ }
+----
+
+[source,go]
+----
+func DeleteUser(
+  ...
+) (DeleteUserResponse, error) {
+  // ...
+}
+----
+--
+
+[.column.text-left]
+--
+`struct` *exclusively* for returns except error
+
+[.medium]
+New fields for new outputs
+
+[%step.small]
+Need more than 2 results? +
+Use a `struct`.
+--
+
+[.notes]
+--
+Result objects are the analog of parameter objects
+for returning values.
+They're equally simple.
+A struct that exists solely to hold values returned by a function.
+All except the `error`, which should remain the last output of your function.
+
+You can add new fields to this struct -- new things your function needs to
+return,
+and that's completely backwards compatible.
+
+Similar rule of thumb applies here.
+Need to produce more than two things?
+Return a struct.
+--

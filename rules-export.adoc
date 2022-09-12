@@ -1,0 +1,27 @@
+[.columns.is-vcentered]
+= {rule-exported}
+
+[.column]
+Cannot remove
+
+[.column.medium]
+functions +
+variable +
+type +
+constants
+
+[.column]
+once exported
+
+[.notes]
+--
+Exported means forever.
+
+Anything you export,
+be it function, variable, type, or constant,
+you cannot delete it once exported.
+
+This reason for this should be obvious.
+It'll break anyone using them.
+--
+

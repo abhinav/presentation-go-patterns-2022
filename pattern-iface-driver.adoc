@@ -1,0 +1,37 @@
+= Driver Interface
+
+[.notes]
+--
+Okay, so I don't know if there's a real name for this pattern.
+I'm just making the name up.
+
+Let me first explain the pattern at a high level,
+and then I'll demonstrate with code.
+--
+
+== Overview
+
+[.notes]
+--
+In this pattern, 
+--
+
+== Example
+
+[source,go]
+----
+type Writer interface {
+  WriteBytes([]byte) error
+}
+----
+
+[source,go]
+----
+type WriterDriver interface {
+  WriteBytes([]byte) error
+}
+
+type Writer struct {
+  Driver WR
+}
+----

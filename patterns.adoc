@@ -1,0 +1,12 @@
+= Patterns
+
+// TODO: Better title?
+
+[.notes]
+--
+Let's cover them in order.
+--
+
+include::pattern-export.adoc[]
+include::pattern-func.adoc[]
+include::pattern-iface.adoc[]

@@ -1,0 +1,19 @@
+= {rule-interfaces}
+
+How to plan for expansion?
+
+[.notes]
+--
+Interfaces.
+
+So as we discussed earlier,
+interfaces are immutable.
+You cannot make changes to them once published.
+
+How do we plan for expansion here?
+--
+
+include::pattern-iface-small.adoc[]
+include::pattern-iface-upcast.adoc[]
+include::pattern-iface-driver.adoc[]
+
