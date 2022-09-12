@@ -1,5 +1,5 @@
-[.columns.wrap%conceal]
-= Why you cannot add methods to an interface
+[.columns.wrap]
+= !
 
 [.column.is-full]
 Adding methods to an interface

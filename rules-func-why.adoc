@@ -1,5 +1,5 @@
-[.columns.is-vcentered.wrap%conceal]
-= Why are functions types fixed
+[.columns.is-vcentered.wrap]
+= !
 
 [.column.is-two-thirds]
 [source,diff]

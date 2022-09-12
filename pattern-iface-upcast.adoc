@@ -6,8 +6,8 @@
 Not quite. The next technique you can use here is upcasting.
 --
 
-[%auto-animate%conceal]
-== Upcasting intro
+[%auto-animate]
+== !
 
 [source%linenums,go,data-id=writer]
 ----
@@ -166,10 +166,7 @@ but you should get the idea.
 And you can do other things -- I'm not gonna list all here.
 --
 
-[%conceal]
-== Upcast to upgrade summary
-
-*Summary*
+== Summary
 
 * DRY implementation
 * Guaranteed fallback behavior

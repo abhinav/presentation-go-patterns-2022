@@ -50,8 +50,8 @@ All goroutines should,
 Do not fire and forget.
 --
 
-[.columns%conceal%auto-animate]
-== Controlled lifetime example
+[.columns%auto-animate]
+== !
 
 [.column]
 --
@@ -115,8 +115,8 @@ A better way to accomplish this is with a combination of,
 
 --
 
-[.columns%conceal%auto-animate]
-== Controlled lifetime example
+[.columns%auto-animate]
+== !
 
 [.column]
 --
@@ -173,10 +173,7 @@ other operations you're running,
 and so their lifetime will be likewise bounded.
 --
 
-[%conceal]
-== What if I need fire-and-forget?
-
-What if I need fire-and-forget?
+== [.small]#What if I need fire-and-forget?#
 
 [%step]
 Use a worker pool

@@ -9,8 +9,8 @@ Let me first explain the pattern at a high level,
 and then I'll demonstrate with code.
 --
 
-[%auto-animate%conceal]
-== Driver interface diagram
+[%auto-animate]
+== !
 
 [mermaid,data-id=img]
 ....
@@ -26,8 +26,8 @@ In this pattern, you start with a "Driver" interface
 with the most minimal API.
 --
 
-[%auto-animate%conceal]
-== Driver interface diagram
+[%auto-animate]
+== !
 
 [mermaid,data-id=img]
 ....
@@ -52,8 +52,8 @@ But then on top of that, you can add other functionality
 that depends on the small interface.
 --
 
-[%auto-animate%conceal]
-== Driver interface diagram
+[%auto-animate]
+== !
 
 [mermaid,data-id=img]
 ....
@@ -78,8 +78,8 @@ except it still provides all methods on the same object.
 Let me demonstrate with code quickly.
 --
 
-[%auto-animate%auto-animate-restart%conceal]
-== Driver interface intro
+[%auto-animate%auto-animate-restart]
+== !
 
 [source,go]
 ----
@@ -103,8 +103,8 @@ I start with a Writer struct that has the same interface
 as the driver.
 --
 
-[%auto-animate%conceal]
-== Driver interface intro
+[%auto-animate]
+== !
 
 [source%linenums,go,data-id=writer]
 ----
@@ -128,8 +128,8 @@ but as a method.
 I can support upcasting on this interface too!
 --
 
-[%auto-animate%conceal]
-== Driver interface intro
+[%auto-animate]
+== !
 
 [source%linenums,go,data-id=writer]
 ----
@@ -156,10 +156,7 @@ func (w *Writer) WriteString(bs []byte) error {
 So I'm sort of able to give my users the best of both worlds.
 --
 
-[%conceal]
-== Driver interface benefits
-
-*Benefits*
+== Benefits
 
 * Implement a small interface
 * Consume a large surface
@@ -177,10 +174,7 @@ And lastly, these method implementations can store information on the wrapper
 object.
 --
 
-[%conceal]
-== Driver interface examples
-
-*Examples*
+== Examples
 
 * `zap.Logger` wraps `zapcore.Core`
 * `http.Client` wraps `http.RoundTripper`
