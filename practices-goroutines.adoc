@@ -1,0 +1,180 @@
+= Goroutines
+
+Lightweight concurrency +
+[.medium]#but not free#
+
+:fn-stack-1: https://github.com/golang/go/blob/f296b7a6f045325a230f77e9bda1470b1270f817/src/runtime/stack.go#L72-L83[L72]
+:fn-stack-2: https://github.com/golang/go/blob/go1.19.1/src/runtime/stack.go#L1479-L1483[L1479]
+
+[.small]
+Each goroutine costs *at least* 2 KB footnote:[runtime/stack.go {fn-stack-1}, {fn-stack-2}]
+
+[.notes]
+--
+First, let's talk about goroutines.
+
+We all know and love goroutines.
+They're lightweight, much more lightweight than threads.
+
+But they're not free.
+
+On top of the runtime cost, each goroutine costs *at least* 2 kB.
+Starting Go 1.19, it can be higher -- based on the size your program's
+goroutines grow to on average.
+
+So let's discuss a couple best practices with goroutines.
+--
+
+[.columns.wrap.is-vcentered]
+== Lifetime control
+
+[.column.is-half.text-right]
+All goroutines
+
+[.column.is-half.text-left]
+must finish or +
+must be stoppable
+
+[%step.column.is-full]
+Do not fire-and-forget
+
+[.notes]
+--
+Always control the lifetime of your goroutines.
+
+All goroutines should,
+
+* either have a known, predictable end time that you wait for
+* or you must have the ability to tell them to stop
+
+Do not fire and forget.
+--
+
+[.columns%conceal%auto-animate]
+== Controlled lifetime example
+
+[.column]
+--
+Bad
+
+[source,go]
+----
+go func() {
+  for {
+    flush()
+    time.Sleep(delay)
+  }
+}()
+----
+
+[.small,data-id=unstoppable]
+Cannot be stopped
+--
+
+[%step.column]
+--
+[data-id=good-label]
+Good
+
+[source%linenums,go,data-id=good]
+----
+stop := make(chan struct{})
+tick := time.NewTicker(delay)
+go func() {
+  for {
+    select {
+    case <-tick.C:
+      flush()
+    case <-stop:
+      tick.Stop()
+      return
+    }
+  }
+}()
+----
+
+[.small,data-id=stoppable]
+Can be stopped with +
+`close(stop)`
+--
+
+[.notes]
+--
+As an example,
+here's a simple worker goroutine
+that periodically flushes some information.
+
+It cannot be stopped.
+This is bad.
+
+A better way to accomplish this is with a combination of,
+
+* a `stop` channel to tell your worker when to stop
+* a `time.Ticker` to get the sleeps as a channel,
+  with a means of stopping it
+
+--
+
+[.columns%conceal%auto-animate]
+== Controlled lifetime example
+
+[.column]
+--
+Bad
+
+[source,go]
+----
+go func() {
+  for {
+    flush()
+    time.Sleep(delay)
+  }
+}()
+----
+
+[.small,data-id=unstoppable]
+Cannot be stopped
+--
+
+[.column]
+--
+[data-id=good-label]
+Better
+
+[source%linenums,go,data-id=good]
+----
+ctx, cancel := /* ... */
+tick := time.NewTicker(delay)
+go func() {
+  for {
+    select {
+    case <-tick.C:
+      flush(ctx)
+    case <-ctx.Done():
+      tick.Stop()
+      return
+    }
+  }
+}()
+----
+
+[.small,data-id=stoppable]
+Can be stopped with +
+`cancel()`
+--
+
+[.notes]
+--
+An even better way of doing this is to use a context.
+The context's done channel tells you when it's time to stop.
+
+More importantly, you can pass that context down to
+other operations you're running,
+and so their lifetime will be likewise bounded.
+--
+
+// * Always control the lifetime
+// * Don't fire and forget
+// * No unstoppable background worker
+
+// TODO: worker pool, stop method, etc.

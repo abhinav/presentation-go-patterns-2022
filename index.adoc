@@ -8,6 +8,7 @@ Abhinav Gupta
 :revealjs_plugin_zoom: disabled
 :revealjs_theme: black
 :revealjs_totalTime: 2700
+:revealjs_transition: none
 :customcss: css/style.css
 :icons: font
 :idprefix:
@@ -21,56 +22,4 @@ include::intro.adoc[leveloffset=+1]
 include::agenda.adoc[leveloffset=+1]
 include::rules.adoc[leveloffset=+1]
 include::patterns.adoc[leveloffset=+1]
-
-== Practices
-
-[.notes]
---
-That's enough about parameters and interfaces.
-A lot of that is also just general purpose.
-
-Let's talk about some Go specific practices.
---
-
-== Goroutines
-
-[.notes]
---
-
---
-
-// * Always control the lifetime
-// * Don't fire and forget
-// * No unstoppable background worker
-
-// TODO: worker pool, stop method, etc.
-
-== Errors
-
-* Producing
-* Consuming
-
-== Produce errors
-
-* errors.New, fmt.Errorf
-* Sentinel errors
-* Structured errors
-
-== Consume errors
-
-* Handle the error
-* Propagate the error
-
-=== Handle errors
-
-* match the error with errors.Is
-* extract information with errors.As
-* log the error
-
-=== Propagate errors
-
-* return as-is
-* add context with fmt.Errorf, use %w
-* add information with structured error
-
-== Discussion
+include::practices.adoc[leveloffset=+1]
