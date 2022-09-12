@@ -1,10 +1,16 @@
+ASCIIDOCTOR = bundle exec asciidoctor-revealjs
+ASCIIDOCTOR_ARGS = \
+	   -r asciidoctor-diagram \
+	   -a mmdc=$(shell pwd)/node_modules/.bin/mmdc \
+	   -a imagesdir=images \
+	   -t
+
 index.html: index.adoc
-	bundle exec asciidoctor-revealjs index.adoc
+	$(ASCIIDOCTOR) $(ASCIIDOCTOR_ARGS) index.adoc
 
 .PHONY: watch
 watch:
-	ls style.css *.adoc | \
-		entr bundle exec asciidoctor-revealjs -t index.adoc
+	ls *.adoc | entr $(ASCIIDOCTOR) $(ASCIIDOCTOR_ARGS) index.adoc
 
 .PHONY: serve
 serve:

@@ -8,10 +8,13 @@ Abhinav Gupta
 :revealjs_slideNumber: c/t
 :revealjs_theme: black
 :revealjs_totalTime: 2700
-:customcss: style.css
+:customcss: css/style.css
 :icons: font
 :idprefix:
 :idseparator: -
+:mermaid-theme: dark
+:mermaid-background: transparent
+:mermaid-format: svg
 :source-highlighter: highlightjs
 
 include::intro.adoc[leveloffset=+1]
