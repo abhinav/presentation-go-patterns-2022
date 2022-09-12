@@ -1,3 +1,5 @@
+SHELL := /bin/bash
+
 ASCIIDOCTOR = bundle exec asciidoctor-revealjs
 ASCIIDOCTOR_ARGS = \
 	   -r asciidoctor-diagram \
