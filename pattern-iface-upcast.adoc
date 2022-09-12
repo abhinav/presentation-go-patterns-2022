@@ -58,7 +58,7 @@ This is the interface we want Writers to implement if they want to upgrade.
 [%auto-animate]
 == Upcast and use implementation
 
-[source%linenums,go,data-id=writer]
+[source%linenums,go,data-id=writer,highlight='|5-7,10-11']
 ----
 type Writer interface {
   WriteBytes([]byte) error

@@ -68,7 +68,7 @@ func ListPosts(
 ----
 
 [.column]
-[source%linenums,go,data-id=usage]
+[source%linenums,go,data-id=usage,highlight='|4-5,9']
 ----
 ListPosts(ctx)
 

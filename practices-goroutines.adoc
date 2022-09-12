@@ -141,7 +141,7 @@ Cannot be stopped
 [data-id=good-label]
 Better
 
-[source%linenums,go,data-id=good]
+[source%linenums,go,data-id=good,highlight='|1,8,10']
 ----
 ctx, cancel := /* ... */
 tick := time.NewTicker(delay)
@@ -172,6 +172,28 @@ More importantly, you can pass that context down to
 other operations you're running,
 and so their lifetime will be likewise bounded.
 --
+
+[%conceal]
+== What if I need fire-and-forget?
+
+What if I need fire-and-forget?
+
+[%step]
+Use a worker pool
+
+TODO
+
+[.notes]
+--
+That said, sometimes you do need fire and forget.
+This is usually the case for per-request background tasks.
+Things like shadowing traffic, for example.
+
+Turns out, you don't need fire-and-forget.
+What you need is a worker pool.
+--
+
+// TODO: worker pool?
 
 // * Always control the lifetime
 // * Don't fire and forget
