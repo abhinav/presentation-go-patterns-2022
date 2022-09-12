@@ -5,7 +5,7 @@ Abhinav Gupta
 :revealjs_hash: true
 :revealjs_navigationMode: linear
 :revealjs_pdfseparatefragments: false
-:revealjs_slideNumber: c/t
+:revealjs_plugin_zoom: disabled
 :revealjs_theme: black
 :revealjs_totalTime: 2700
 :customcss: css/style.css
@@ -24,13 +24,20 @@ include::patterns.adoc[leveloffset=+1]
 
 == Practices
 
-// == Object Initialization
+[.notes]
+--
+That's enough about parameters and interfaces.
+A lot of that is also just general purpose.
 
-// * Always fully hydrates
-// * Constructor
-// * sync.Once pattern?
+Let's talk about some Go specific practices.
+--
 
-// == Goroutine management
+== Goroutines
+
+[.notes]
+--
+
+--
 
 // * Always control the lifetime
 // * Don't fire and forget

@@ -163,6 +163,7 @@ So I'm sort of able to give my users the best of both worlds.
 
 * Implement a small interface
 * Consume a large surface
+* Store internal state
 
 [.notes]
 --
@@ -171,4 +172,26 @@ only have to implement as little of it as they need.
 
 Users that want to *consume* the functionality provided by it,
 can consume the struct and get a much richer API.
+
+And lastly, these method implementations can store information on the wrapper
+object.
+--
+
+[%conceal]
+== Driver interface examples
+
+*Examples*
+
+* `zap.Logger` wraps `zapcore.Core`
+* `http.Client` wraps `http.RoundTripper`
+* `database/sql` wraps `database/sql/driver`
+
+[.notes]
+--
+Some real world examples of this include,
+
+* our very own Zap
+* Go's standard HTTP client,
+  and database/sql where most types in the SQL package
+  wrap thinner interfaces inside driver.
 --

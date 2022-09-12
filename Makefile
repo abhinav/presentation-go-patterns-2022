@@ -5,7 +5,6 @@ ASCIIDOCTOR_ARGS = \
 	   -r asciidoctor-diagram \
 	   -a mmdc=$(shell pwd)/node_modules/.bin/mmdc \
 	   -a imagesdir=images \
-	   -a revealjs_plugin_zoom=disabled \
 	   -a docinfo=shared \
 	   -t
 

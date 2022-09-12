@@ -25,9 +25,9 @@ if err != nil {
 Nope!
 --
 
-[.column.is-three-fifths,step=1]
+[.column.is-three-fifths]
 --
-[source,go]
+[source,go,step=2]
 ----
 func Process(
   ctx context.Context,
@@ -38,8 +38,10 @@ func Process(
 }
 ----
 
+[step=4]
 Breaks function references
 
+[step=3]
 [source,go]
 ----
 Process(ctx, ListPosts)

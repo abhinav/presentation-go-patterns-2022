@@ -6,7 +6,7 @@
 Not quite. The next technique you can use here is upcasting.
 --
 
-[%conceal]
+[%auto-animate%conceal]
 == Upcasting intro
 
 [source%linenums,go,data-id=writer]

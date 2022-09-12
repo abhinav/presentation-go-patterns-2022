@@ -1,11 +1,10 @@
 = Agenda
 
 * Rules
-** Why
+* Why
 * Patterns
-** How
 
-TODO: more
+TODO: practices
 
 [.notes]
 --
@@ -14,10 +13,12 @@ The agenda for this talk is roughly this,
 * First, we'll discuss some rules we're operating under
   for good, maintainable packages and libraries,
   and why those rules make sense.
-* Next, we'll talk about some patterns we can use to operate
-  inside these rules, and how to use them.
+* Next, we'll talk about some good patterns we can use to operate
+  inside these rules.
 
 TODO
+
+Finally, we'll discuss some best practices to use in that context.
 
 Okay, let's get started.
 --
