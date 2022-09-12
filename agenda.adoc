@@ -3,8 +3,7 @@
 * Rules
 * Why
 * Patterns
-
-TODO: practices
+* Practices
 
 [.notes]
 --
@@ -15,10 +14,7 @@ The agenda for this talk is roughly this,
   and why those rules make sense.
 * Next, we'll talk about some good patterns we can use to operate
   inside these rules.
-
-TODO
-
-Finally, we'll discuss some best practices to use in that context.
+* After that, we'll discuss some best practices.
 
 Okay, let's get started.
 --

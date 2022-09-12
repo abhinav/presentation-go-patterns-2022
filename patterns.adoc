@@ -1,7 +1,5 @@
 = Patterns
 
-// TODO: Better title?
-
 [.notes]
 --
 Let's cover them in order.

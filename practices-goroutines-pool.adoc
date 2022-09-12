@@ -1,0 +1,141 @@
+= [.small]#What if I need fire-and-forget?#
+
+[%step]
+Use a worker pool
+
+[.notes]
+--
+That said, sometimes you do need fire and forget.
+This is usually the case for per-request background tasks.
+Things like shadowing traffic, for example.
+
+Turns out, you don't need fire-and-forget.
+What you need is a stoppable worker pool.
+--
+
+[%auto-animate.columns]
+= !
+
+[column.is-half]
+--
+[source%linenums,go,data-id=worker]
+----
+func worker(
+  jobc <-chan job,
+) {
+  for job := range jobc {
+    job.do(ctx)
+  }
+}
+----
+
+[.small]
+Runs until `close(jobc)`.
+--
+
+[%step]
+[column.is-half.medium]
+--
+[source%linenums,go,data-id=mgr-def]
+----
+type manager struct {
+  jobc chan<- job
+}
+----
+
+[source%linenums,go,data-id=mgr-init]
+----
+mgr := manager{
+  jobc: jobc,
+}
+for i := 0; i < NumWorkers; i++ {
+  go worker(jobc)
+}
+----
+
+[source%linenums,go,data-id=mgr-stop]
+----
+func (m *manager) Stop() {
+  close(m.jobc)
+}
+----
+--
+
+[.notes]
+--
+Set up a worker that's able to pull jobs off a channel and run them.
+This worker runs until the channel is closed.
+
+Next, add a manager that sends them work,
+and closes off the channel when it's time for them to stop.
+
+If you need to be able to abandon work,
+use context to signal end like before.
+--
+
+[%auto-animate.columns]
+= !
+
+[column.is-half]
+--
+[source%linenums,go,data-id=worker]
+----
+func worker(
+  ctx context.Context,
+  jobc <-chan job,
+) {
+  for {
+    select {
+    case <-ctx.Done():
+      return
+    case job := <-jobc:
+      job.do(ctx)
+    }
+  }
+}
+----
+
+[.small]
+Runs until `close(jobc)`.
+--
+
+[column.is-half.medium]
+--
+[source%linenums,go,data-id=mgr-def]
+----
+type manager struct {
+  stop context.CancelFunc
+  jobc chan<- job
+}
+----
+
+[source%linenums,go,data-id=mgr-init]
+----
+ctx, cancel := context.WithCancel(..)
+mgr := manager{
+  stop: cancel,
+  jobc: jobc,
+}
+for i := 0; i < NumWorkers; i++ {
+  go worker(ctx, jobc)
+}
+----
+
+[source%linenums,go,data-id=mgr-stop]
+----
+func (m *manager) Stop() {
+  m.stop()
+}
+----
+--
+
+[.notes]
+--
+Obviously, this can get more or less complicated based on your needs.
+
+* You can use buffered or unbuffered channels, unbounded in-memory queues
+* You can build an adaptive worker pool that grows or shrinks based on workload
+* ... and other things
+
+But I'm gonna stop talking about these here.
+--
