@@ -27,4 +27,44 @@ include::rules.adoc[leveloffset=+1]
 include::patterns.adoc[leveloffset=+1]
 include::practices.adoc[leveloffset=+1]
 
+[.columns]
+== Conclusion
+
+[.column.medium]
+--
+Don't
+
+* export until necessary
+* fire-and-forget goroutines
+* noisy error messages
+--
+
+[.column.medium]
+--
+Do
+
+* plan for expansion
+* control goroutine lifetimes
+* expose and handle errors
+--
+
+[.notes]
+--
+In conclusion:
+
+* Don't export something until it's necessary
+* When you do export it, plan for expansion:
+** use parameter objects, result objects, functional options, upcasting, driver
+   interfaces, everything else to make sure you don't break your exported
+   functions or interfaces.
+* Don't leak goroutines -- control their lifetime
+* Don't write redundant error messages
+* Do expose errors that should be handled, and handle them properly
+--
+
 == Discussion
+
+[.notes]
+--
+Questions?
+--
