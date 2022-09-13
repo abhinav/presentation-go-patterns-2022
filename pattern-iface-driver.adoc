@@ -144,7 +144,7 @@ type StringWriter interface {
 }
 
 func (w *Writer) WriteString(bs []byte) error {
-  if sw, ok := w.(StringWriter); ok {
+  if sw, ok := w.drv.(StringWriter); ok {
     return sw.WriteString(s)
   }
   return w.WriteBytes([]string(bs))
