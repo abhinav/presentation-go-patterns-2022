@@ -17,9 +17,15 @@ Abhinav Gupta
 :mermaid-background: transparent
 :mermaid-format: svg
 :source-highlighter: highlightjs
+:title-slide-background-image: gopher-dance-long-3x.gif
+:title-slide-background-size: 192px auto
+:title-slide-background-position: bottom 33% right 25%
 
 [.small.text-right]
 {revdate}
+
+[.attribution]
+Gopher credit: https://github.com/egonelbre/gophers[egonelbre/gophers]
 
 include::intro.adoc[leveloffset=+1]
 include::agenda.adoc[leveloffset=+1]

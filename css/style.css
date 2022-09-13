@@ -28,3 +28,10 @@ span.small {
 	font-size: 0.6em;
 	vertical-align: middle;
 }
+
+.attribution {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	font-size: 0.25em;
+}
