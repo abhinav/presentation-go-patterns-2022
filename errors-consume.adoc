@@ -1,0 +1,222 @@
+= Consume errors
+
+* Propagate: return to caller as-is or with context
+* Handle: do something with it or react to it
+
+[.notes]
+--
+With consuming errors,
+you're either going to propagate the error or handle it.
+
+Propagation is returning it upstream.
+
+Handling -- you do something with it.
+--
+
+[.columns.wrap]
+== Propagate errors
+
+[.column]
+--
+[source,go]
+----
+out, err := f()
+if err != nil {
+  return err
+}
+----
+
+[step=1]
+[source,go]
+----
+out, err := g()
+if err != nil {
+  return fmt.Errorf("get g: %w")
+}
+----
+
+[.small,step=1]
+Use `%w` to retain error matching
+--
+
+[%step.column]
+--
+[source,go]
+----
+type FooError struct {
+  ID  string
+  Err error
+}
+
+func (e *FooError) Unwrap() error {
+  return e.Err
+}
+
+out, err := h(id)
+if err != nil {
+  return &FooError{ID: id, Err: err}
+}
+----
+
+[.small]
+Add `Unwrap()` to retain error matching
+--
+
+[.notes]
+--
+Propagating errors. This one is easy. You do it all the time in Go.
+
+If you need to add context to an error -- something I highly recommend --
+use `fmt.Errorf`. Note the `%w`.
+You need that for callers to be able to match the leaf error you're wrapping.
+
+As a special case of structured errors,
+you can wrap an error with some structured information.
+Note the `Unwrap()` method.
+You need that similarly to retain leaf error matching.
+--
+
+[.columns.wrap]
+== Error messages
+
+[.column.is-one-third.medium]
+No "failed to X"
+
+[.column.is-two-thirds.medium]
+[source,go]
+----
+fmt.Errorf("failed to load config: %w", err) // BAD
+// failed to load config: failed to decode protobuf: ...
+
+fmt.Errorf("load config: %w", err)           // GOOD
+// load config: decode protobuf: ...
+----
+
+[.column.is-one-third.medium]
+Use %q
+
+[.column.is-two-thirds.medium]
+[source,go]
+----
+fmt.Errorf("get user %v: %w", user, err) // BAD
+// get user : invalid name
+
+fmt.Errorf("get user %q: %w", user, err) // GOOD
+// get user "": invalid name
+----
+
+[.column.is-one-third.medium]
+Don't capitalize
+
+[.column.is-two-thirds.medium]
+[source,go]
+----
+fmt.Errorf("Send request: %w", err) // BAD
+// Send request: Connect to "foo": ...
+
+fmt.Errorf("send request: %w", err) // GOOD
+// send request: connect to "foo": ...
+----
+
+[.notes]
+--
+A couple quick tips about error messages:
+
+* Don't add "failed to X" or "error doing Y" to the message.
+  That's implied.
+  These errors get chained, and adding these prefixes makes them really noisy.
+* Use %q when reporting strings in the message.
+  It automatically quotes the string, so the error is more readable
+  if the string was empty or contained non standard characters.
+* Lastly, don't start the messages with capital letters.
+  Again, these are meant to be chained, so that adds a bunch of sporadic
+  capital letters.
+--
+
+[.columns]
+== Handle errors
+
+[.column.medium]
+--
+sentinel errors => `errors.Is`
+
+[%step]
+[source,go]
+----
+func loadConfig(..) (*Config, error) {
+  f, err := os.Open(name)
+  if err != nil {
+    if errors.Is(err, fs.ErrNotExist) {
+      // Use default configuration
+      // if file does not exist.
+      return _defaultConfig, nil
+    }
+
+    // Fail on all other errors.
+    return nil, err
+  }
+  defer f.Close()
+
+  // ...
+}
+----
+--
+
+[.column.medium]
+--
+structured errors => `errors.As`
+
+[%step]
+[source,go]
+----
+c, err := connect()
+if err != nil {
+  var dnsErr *net.DNSError
+  if errors.As(err, &dnsErr) && len(conns) {
+    // Fallback to a random existing
+    // connection, if any, if DNS resolution
+    // failed.
+    log.Warn(..., dnsErr.Name)
+    c = conns[rand.Intn(len(conns))]
+  } else {
+    // Fail on all other errors.
+    return nil, err
+  }
+}
+----
+--
+
+[.notes]
+--
+Handling errors.
+
+I've already covered this a little so I won't spend too long on this,
+but if you're handling errors, you've got two options.
+
+If you're handing sentinel errors, use errors.Is.
+In this example, I'm *handling* the "file does not exist" error,
+because I have a good fallback behavior for that.
+Everything else, I'm passing up to my caller to deal with.
+
+Similarly, if you need to handle structured errors, use errors.As.
+In this example, I'm handling a DNS resolution error with
+some graceful degradation if possible,
+and again, failing otherwise.
+--
+
+// = Consume errors
+
+// * Handle the error
+// * Propagate the error
+
+// == Handle errors
+
+// * match the error with errors.Is
+// * extract information with errors.As
+// * log the error
+
+// == Propagate errors
+
+// * return as-is
+// * add context with fmt.Errorf, use %w
+// * add information with structured error

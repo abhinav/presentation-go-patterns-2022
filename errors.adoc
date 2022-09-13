@@ -14,20 +14,10 @@ Let's talk about producing first.
 --
 
 include::errors-produce.adoc[]
+include::errors-consume.adoc[]
 
-= Consume errors
+== Summary
 
-* Handle the error
-* Propagate the error
-
-== Handle errors
-
-* match the error with errors.Is
-* extract information with errors.As
-* log the error
-
-== Propagate errors
-
-* return as-is
-* add context with fmt.Errorf, use %w
-* add information with structured error
+* Use sentinel and structured errors when needed
+* `fmt.Errorf` and `errors.New` otherwise
+* Match with `errors.Is` and `errors.As` to handle

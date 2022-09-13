@@ -1,4 +1,4 @@
-= Producing errors
+= Produce errors
 
 [%step]
 image::rootcause.gif[]
