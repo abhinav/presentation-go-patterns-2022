@@ -1,0 +1,52 @@
+[.columns]
+= Structured errors
+
+[.column.is-half]
+--
+Error types
+
+[source,go]
+----
+type SyntaxError struct {
+  Line, Column int
+  msg          string
+}
+
+func (e *SyntaxError) Error() string
+----
+--
+
+[.column.is-half]
+--
+* Suffix with "Error"
+* Use a pointer receiver
+* Match with `errors.As`
++
+[%step]
+[source,go]
+----
+var synErr *SyntaxError
+if errors.As(err, &synErr) {
+  highlight(synErr.Line)
+}
+----
+--
+
+[.notes]
+--
+As the name suggested, structured errors on the other hand,
+are just types that implement the error interface,
+that users can extract information from.
+
+Use these when there's information to expose.
+The line number at which the error occurred,
+the name of the object that's already using a resource you wanted to use,
+etc.
+
+If you use these,
+
+* name them by adding a "Error" suffix.
+  This is distinct from the "Err" prefix on variables.
+* *Always* use a pointer receiver. This is necessary to make these comparable.
+* Users will be able to match these with `errors.As`.
+--

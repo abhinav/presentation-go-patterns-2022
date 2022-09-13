@@ -1,4 +1,4 @@
-[.columns.wrap]
+[.columns]
 = Sentinel errors
 
 [.column.is-half]
@@ -29,7 +29,9 @@ var ErrPermission =
 [%step]
 [source,go]
 ----
-errors.Is(err, fs.ErrNotExist)
+if errors.Is(err, fs.ErrNotExist) {
+  createFile(..)
+}
 ----
 --
 

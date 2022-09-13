@@ -96,7 +96,8 @@ With leaf errors, your first consideration is,
 "can they be handled?"
 
 Or rather, do you want a caller to be able to react to this error
-besides just returning it or logging it.
+besides just wrapping and/or returning it?
+Do they get any information from it that they can programmatically react to?
 
 If the answer is no, just use vanilla fmt.Errorf or errors.New.
 Don't make it complicated.
@@ -106,9 +107,4 @@ Sentinel errors and structured errors -- depending on your needs.
 --
 
 include::errors-produce-sentinel.adoc[leveloffset=+1]
-
-== Structured errors
-
-// * errors.New, fmt.Errorf
-// * Sentinel errors
-// * Structured errors
+include::errors-produce-structured.adoc[leveloffset=+1]
