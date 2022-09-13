@@ -17,6 +17,7 @@ site:
 	$(ASCIIDOCTOR) -D _site $(ASCIIDOCTOR_ARGS) index.adoc
 	cp -R css _site/css
 	cp -R fonts _site/fonts
+	cp $(shell git ls-files images | grep -v gitignore) _site/images
 	cp -R reveal.js/dist _site/reveal.js/dist
 	cp -R reveal.js/plugin/{highlight,notes} _site/reveal.js/plugin
 
