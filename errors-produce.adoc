@@ -1,0 +1,114 @@
+= Producing errors
+
+[%step]
+image::rootcause.gif[]
+
+[.notes]
+--
+When I'm talking about producing errors,
+I'm specifically talking about "leaf" errors.
+
+This is made up terminology, but to be fair, all terminology is made up.
+So I'll stick with it.
+
+Leaf errors are the root cause -- they do not wrap anything else.
+Yeah, leaf errors are the root.
+I know, my analogies are running out the garden.
+--
+
+[.columns]
+== Leaf errors
+
+[.column]
+--
+Not a leaf error
+
+[source,go]
+----
+out, err := f()
+if err != nil {
+  return err
+}
+
+out, err := g()
+if err != nil {
+  return fmt.Errorf("g: %v", err)
+}
+----
+--
+
+[.column]
+--
+Leaf errors
+
+[source,go]
+----
+return errors.New("great sadness")
+
+return fmt.Errorf(
+  "unhappy result %q", result)
+----
+--
+
+[.notes]
+--
+Just as examples,
+left returns the error, possibly wrapping it,
+right *creates* a new error out of nowhere.
+
+These are the ones I want to talk about right now.
+--
+
+[.columns]
+== Can they be handled?
+
+[.column.is-half]
+--
+[.medium]
+No
+
+[.small, step=1]
+Use `fmt.Errorf` / `errors.New`
+
+[.medium, step=1]
+[source,go]
+----
+return errors.New("session is closed")
+
+return fmt.Errorf(
+  "invalid email address %q", email)
+----
+--
+
+[.column.is-half]
+--
+[.medium]
+Yes
+
+[step=2]
+* Sentinel errors
+* Structured errors
+--
+
+[.notes]
+--
+With leaf errors, your first consideration is,
+"can they be handled?"
+
+Or rather, do you want a caller to be able to react to this error
+besides just returning it or logging it.
+
+If the answer is no, just use vanilla fmt.Errorf or errors.New.
+Don't make it complicated.
+
+If the answer is yes, you have two options.
+Sentinel errors and structured errors -- depending on your needs.
+--
+
+include::errors-produce-sentinel.adoc[leveloffset=+1]
+
+== Structured errors
+
+// * errors.New, fmt.Errorf
+// * Sentinel errors
+// * Structured errors

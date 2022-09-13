@@ -9,35 +9,4 @@ Let's talk about some Go specific practices.
 --
 
 include::practices-goroutines.adoc[]
-
-// TODO
-
-= Errors
-
-* Producing
-* Consuming
-
-= Produce errors
-
-* errors.New, fmt.Errorf
-* Sentinel errors
-* Structured errors
-
-= Consume errors
-
-* Handle the error
-* Propagate the error
-
-== Handle errors
-
-* match the error with errors.Is
-* extract information with errors.As
-* log the error
-
-== Propagate errors
-
-* return as-is
-* add context with fmt.Errorf, use %w
-* add information with structured error
-
-= Discussion
+include::errors.adoc[]

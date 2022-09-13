@@ -1,0 +1,48 @@
+[.columns.wrap]
+= Sentinel errors
+
+[.column.is-half]
+--
+Global error variables
+
+[source,go]
+----
+package fs
+
+var ErrNotExist =
+  errors.New("file does not exist")
+
+var ErrExist =
+  errors.New("file already exists")
+
+var ErrPermission =
+  errors.New("permission denied")
+----
+--
+
+[.column.is-half]
+--
+* Prefix name with "Err"
+* Avoid overly verbose names ([.step.small.strike]#ErrFileAlreadyExists#)
+* Match with `errors.Is`
++
+[%step]
+[source,go]
+----
+errors.Is(err, fs.ErrNotExist)
+----
+--
+
+[.notes]
+--
+Sentinel errors is just a more complicated way of saying
+global error variable.
+
+Use these when your error message is fixed.
+
+Just declare a top level variable named "Err" something.
+Avoid overly verbose names.
+Don't turn the message into the variable name verbatim.
+
+Callers will be able to match these with the `errors.Is` API.
+--

@@ -18,8 +18,13 @@ Abhinav Gupta
 :mermaid-format: svg
 :source-highlighter: highlightjs
 
+[.small.text-right]
+{revdate}
+
 include::intro.adoc[leveloffset=+1]
 include::agenda.adoc[leveloffset=+1]
 include::rules.adoc[leveloffset=+1]
 include::patterns.adoc[leveloffset=+1]
 include::practices.adoc[leveloffset=+1]
+
+== Discussion
