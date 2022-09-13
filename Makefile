@@ -22,7 +22,9 @@ site:
 
 .PHONY: watch
 watch:
-	ls *.adoc | entr $(ASCIIDOCTOR) $(ASCIIDOCTOR_ARGS) index.adoc
+	while sleep 1; do \
+		ls *.adoc | entr -d $(ASCIIDOCTOR) $(ASCIIDOCTOR_ARGS) index.adoc; \
+	done
 
 .PHONY: serve
 serve:
