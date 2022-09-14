@@ -36,23 +36,31 @@ Use a `struct`.
 
 [.notes]
 --
-The first tool you can use here is parameter objects.
+Your first point of expansion comes from using parameter objects.
 
 That's just another way of saying that you should
 define a struct *specifically* for your function's parameters.
-This is important.
-This struct is not for sharing with other functions.
-This is not a general purpose "params" struct,
-but a struct whose sole purpose is to plumb arguments to this function.
 
-All arguments except context, that is.
-That remains the first argument to your function.
+This is important. The struct is not for sharing with other functions.
+This is not a general purpose User type for the application.
+This is a struct whose sole purpose is to plumb arguments to this function.
 
-You can add new *optional* fields to this struct.
-That's completely backwards compatible.
+All arguments, except context, that is.
+If that's an argument to your function,
+keep that as a separate argument -- the first one.
+
+Add new *optional* arguments to your function by
+adding new fields to this struct.
+This is completely backwards compatible.
+
+---
 
 As a general rule of thumb:
 if your function takes more than three parameters,
 it will inevitably need more.
-Use a struct.
+Use a parameter object.
+
+That takes care of new arguments.
+What about new results?
+You guessed it.
 --

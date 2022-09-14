@@ -2,6 +2,9 @@
 
 [.notes]
 --
+I skipped over the implementation side earlier
+because it takes a little explanation.
+
 There are a couple ways to implement functional options.
 I'll go over the one I recommend.
 --
@@ -23,14 +26,18 @@ type Option interface {
 [.notes]
 --
 To implement functional options,
-define an *unexported* options struct,
-a public Option interface,
-and add an *unexported* method on this interface
-that accepts a pointer to that struct.
 
-The unexported method on the interface "seals"
-this interface.
-Nobody outside this package can implement this interface.
+* Start with an *unexported* options struct.
+  This struct will hold the final list of options.
+* Define an *exported* `Option` interface,
+  and to that add an *unexported* `apply` method
+  that accepts a pointer to the `options` struct.
+
+The unexported `apply` method "seals" the interface.
+That means that nobody outside this package can implement this interface,
+giving us full control of the list of implementations.
+
+Now, define the option.
 --
 
 [.columns%auto-animate]
@@ -66,10 +73,16 @@ func (o skipAuthors) apply(...) {
 
 [.notes]
 --
-* Add a field to this struct for the option.
-* Build an implementation of the interface,
-  that sets this option on the struct.
-* Return that implementation from the option constructor.
+To do that,
+
+* Add a field to the unexported `options` struct
+  that holds the data for your option.
+* Add a top-level function named after the option
+  that builds an implementation of the Option interface.
+* In this implementation's `apply` method,
+  set the newly added field in the `options` struct.
+
+Do this for every other option.
 --
 
 [.columns%auto-animate]
@@ -107,7 +120,7 @@ func PostedAfter(
 
 [.notes]
 --
-Do this for every option.
+Lastly, consume the options.
 --
 
 [.columns%auto-animate]
@@ -145,13 +158,20 @@ func ListPosts(
 
 [.notes]
 --
-Finally, in your function,
-compile these options into the final options struct.
-And consume the result.
+To do this, in your function,
 
-Lastly, one more cool thing about functional options.
-These are not just for accepting new optional parameters.
-In a pinch, you can also use them to produce new optional results.
+* declare an instance of the unexported `options` struct
+  with whatever default values you want to use.
+  In this case, I'm just using the zero value.
+* Then, for each provided instance of the `Option` interface,
+  call the apply method on this `options` struct object.
+* At the end of that loop, you have an options object ready to use.
+  Inspect it and make your function do what it needs to do.
+
+So this lets add any number of new optional parameters to our function.
+What about return values?
+Turns out, in a pinch,
+you can use functional options to also produce new return values.
 --
 
 [.columns%auto-animate]
@@ -196,13 +216,20 @@ log.Printf(
 
 [.notes]
 --
-To do this, you add an option that accepts a pointer to the variable
-that should be filled with the results.
+For that, declare a new option that accepts a pointer.
+This pointer points to the variable that your function should fill
+with that result.
 
-In this example, I'm adding an option that calculates statistics
-about the SQL query my system ran and posts them to the given struct.
+For example, if my function optionally provided the ability to
+calculate SQL query statistics,
+I could add a `QueryStats` option which accepts a pointer to a `Stats`
+variable.
 
-This is especially useful if the optional result requires extra work
-that you'd rather not do if the caller doesn't want it.
-If the pointer is nil, don't calculate the statistics.
+A caller will provide a pointer to a variable from their local scope,
+and be able to inspect it if your function returns successfully.
+
+This is especially useful if your function has to do extra work
+to calculate this new result.
+You can make your function calculate it only if requested --
+if the pointer is non-nil.
 --

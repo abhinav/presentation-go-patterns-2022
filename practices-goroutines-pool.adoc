@@ -3,18 +3,31 @@
 [%step]
 Use a worker pool
 
+image::gopher-pirate.png[background, size="100px 100px", position="bottom 10% left 10%"]
+
 [.notes]
 --
-That said, sometimes you do need fire and forget.
-This is usually the case for per-request background tasks.
-Things like shadowing traffic, for example.
+So I just said you should never fire-and-forget.
+But sometimes you do need the ability to fire-and-forget.
+For example, you might want to spawn a background task to
+shadow requests of a certain kind.
 
-Turns out, you don't need fire-and-forget.
-What you need is a stoppable worker pool.
+So should you never fire-and-forget goroutines? Not quite.
+You should never fire-and-forget goroutines in an uncontrolled manner.
+We can be civilized about this.
+
+---
+
+Instead of spawning and throwing away goroutines willy nilly,
+we can use controlled, stoppable worker pools.
+
+Let's look at some code.
 --
 
 [%auto-animate.columns]
 = !
+
+image::gopher-pirate.png[background, size="100px 100px", position="bottom 10% left 10%"]
 
 [column.is-half]
 --
@@ -24,16 +37,16 @@ func worker(
   jobc <-chan job,
 ) {
   for job := range jobc {
-    job.do(ctx)
+    job.do()
   }
 }
 ----
 
 [.small]
-Runs until `close(jobc)`.
+Runs until `close(jobc)`
 --
 
-[%step]
+[step=1]
 [column.is-half.medium]
 --
 [source%linenums,go,data-id=mgr-def]
@@ -63,18 +76,35 @@ func (m *manager) Stop() {
 
 [.notes]
 --
-Set up a worker that's able to pull jobs off a channel and run them.
-This worker runs until the channel is closed.
+I set up a worker function.
+This pulls jobs off a channel and runs them.
+This worker runs until there is no more work --
+the channel is empty and closed.
+That's what the `range jobc` does here.
 
-Next, add a manager that sends them work,
-and closes off the channel when it's time for them to stop.
+---
 
-If you need to be able to abandon work,
-use context to signal end like before.
+Next I add a manager type that holds a reference to the other end of the
+channel.
+The manager feeds work into the channel based on an external signal,
+like a function that feeds it a request to shadow.
+
+The manager has the ability to close the channel,
+signaling to all workers that it's time to stop working.
+
+This is a pretty basic worker pool and orchestrator setup.
+In this scenario, workers will run until all work has finished,
+and the manager has closed the channel.
+
+What if we want them to be able to exit early?
+As close as possible to when the manager calls Stop?
+We can use context to scope the lifetimes like we did before.
 --
 
 [%auto-animate.columns]
 = !
+
+image::gopher-pirate.png[background, size="100px 100px", position="bottom 10% left 10%"]
 
 [column.is-half]
 --
@@ -131,11 +161,104 @@ func (m *manager) Stop() {
 
 [.notes]
 --
-Obviously, this can get more or less complicated based on your needs.
+In this case, workers now get the "stop" signal from ctx.Done again.
+The context is supplied by the manager when it spawns the workers.
+The manager signals that it's time to stop working
+by calling the context's cancel function,
+at which point the workers will finish whatever they can,
+and then exit.
 
-* You can use buffered or unbuffered channels, unbounded in-memory queues
-* You can build an adaptive worker pool that grows or shrinks based on workload
-* ... and other things
+Another thing to note is that the manager's Stop function
+doesn't wait for the workers to stop working.
+For that, we need another point of synchronization: a WaitGroup.
+--
 
-But I'm gonna stop talking about these here.
+[%auto-animate.columns]
+= !
+
+image::gopher-pirate.png[background, size="100px 100px", position="bottom 10% left 10%"]
+
+[column.is-half]
+--
+[source%linenums,go,data-id=worker]
+----
+func worker(
+  ctx context.Context,
+  jobc <-chan job,
+  wg   *sync.WaitGroup,
+) {
+  defer wg.Done()
+  for {
+    select {
+    case <-ctx.Done():
+      return
+    case job := <-jobc:
+      job.do(ctx)
+    }
+  }
+}
+----
+--
+
+[column.is-half.medium]
+--
+[source%linenums,go,data-id=mgr-def]
+----
+type manager struct {
+  stop context.CancelFunc
+  jobc chan<- job
+  wg   sync.WaitGroup
+}
+----
+
+[source%linenums,go,data-id=mgr-init]
+----
+ctx, cancel := context.WithCancel(..)
+mgr := manager{
+  stop: cancel,
+  jobc: jobc,
+}
+mgr.wg.Add(NumWorkers)
+for i := 0; i < NumWorkers; i++ {
+  go worker(ctx, jobc, &mgr.wg)
+}
+----
+
+[source%linenums,go,data-id=mgr-stop]
+----
+func (m *manager) Stop() {
+  m.stop()
+  m.wg.Wait()
+}
+----
+--
+
+[.notes]
+--
+Here, I've added a WaitGroup field to the manager.
+I initialize it with the number of workers right before I spawn them.
+Each worker calls done when it exits,
+informing the wait group that it finished running.
+The manager is able to use this in manager.Stop to wait for all workers to
+exit.
+This way, the manager doesn't stop until all workers have stopped.
+
+---
+
+We can keep going on this. This can get more or less complicated based on your
+needs.
+
+* You can use a buffered channel with an estimate of your workload.
+* You can use an unbuffered channel with an unbounded in-memory queue of work,
+  that you feed into the channel when there's room.
+* You can use an adaptive worker pool -- spawning workers on demand if there is
+  some number of tasks outstanding and no workers to handle them.
+* You can emit metrics on the size of your queue to measure whether your system
+  is able to keep up with the demand.
+* And several other things.
+
+Regardless, you don't need to start goroutines without knowing when they'll
+stop.
+
+Moving on.
 --

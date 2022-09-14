@@ -1,20 +1,33 @@
+[.columns.wrap]
 = Consume errors
 
-* Propagate: return to caller as-is or with context
-* Handle: do something with it or react to it
+image::gopher-confused.png[background, size="100px 100px", position="bottom 10% left 10%"]
+
+[.column.is-half.text-right]
+Propagate:
+
+[.column.is-half.text-left]
+return to caller
+
+[.column.is-half.text-right]
+Handle:
+
+[.column.is-half.text-left]
+react to it
 
 [.notes]
 --
-With consuming errors,
-you're either going to propagate the error or handle it.
+When consuming errors,
+you're either going to propagate the error,
+or handle it yourself.
 
-Propagation is returning it upstream.
-
-Handling -- you do something with it.
+Let's discuss these in-order.
 --
 
 [.columns.wrap]
 == Propagate errors
+
+image::gopher-confused.png[background, size="100px 100px", position="bottom 10% left 10%"]
 
 [.column]
 --
@@ -64,16 +77,29 @@ Add `Unwrap()` to retain error matching
 
 [.notes]
 --
-Propagating errors. This one is easy. You do it all the time in Go.
+Propagating errors.
+This one is easy.
+You do it all the time in Go.
 
-If you need to add context to an error -- something I highly recommend --
-use `fmt.Errorf`. Note the `%w`.
-You need that for callers to be able to match the leaf error you're wrapping.
+If error is non-nil return it.
 
-As a special case of structured errors,
-you can wrap an error with some structured information.
+---
+
+Of course, there's a slightly better version of it
+where you add some context to the error.
+Note the use of `%w` there.
+That's necessary for callers to be able to match the leaf error you wrapped.
+
+---
+
+For cases where it's necessary,
+you can also use a structured error to wrap and propagate an error.
 Note the `Unwrap()` method.
-You need that similarly to retain leaf error matching.
+This lets callers match both, your outer, structured error,
+as well as the leaf error that you wrapped.
+
+Speaking of error wrapping and error messages,
+let's take a quick tangent to discuss error messages.
 --
 
 [.columns.wrap]
@@ -120,17 +146,20 @@ fmt.Errorf("send request: %w", err) // GOOD
 
 [.notes]
 --
-A couple quick tips about error messages:
-
-* Don't add "failed to X" or "error doing Y" to the message.
-  That's implied.
-  These errors get chained, and adding these prefixes makes them really noisy.
-* Use %q when reporting strings in the message.
-  It automatically quotes the string, so the error is more readable
-  if the string was empty or contained non standard characters.
-* Lastly, don't start the messages with capital letters.
-  Again, these are meant to be chained, so that adds a bunch of sporadic
-  capital letters.
+* Do not say "failed to foo" or "error doing bar".
+  Failure is implied by the fact that this is an error object.
+  Plus, these errors get chained together -- all these prefixes joined together
+  make for a noisy error message that makes the real issue harder to find.
+* Do use `%q` in error messages when reporting strings.
+  This quotes strings in the message,
+  which makes the error message more readable should it contain
+  a blank string or a string with special characters.
+* Lastly, don't start error messages with capital letters --
+  except initialisms.
+  This again ties back to the fact that these error messages are meant to be
+  chained together.
+  Starting each message like a sentence adds a bunch of sporadic and noisy
+  capital letters to the output in exchange for questionable benefit.
 --
 
 [.columns]
@@ -190,33 +219,28 @@ if err != nil {
 --
 Handling errors.
 
-I've already covered this a little so I won't spend too long on this,
-but if you're handling errors, you've got two options.
+I've already covered this a little already so I won't spend too long on this,
+but if you're handling errors,
+you've got two options depending on the kind of error.
+
+---
 
 If you're handing sentinel errors, use errors.Is.
-In this example, I'm *handling* the "file does not exist" error,
-because I have a good fallback behavior for that.
-Everything else, I'm passing up to my caller to deal with.
+
+In this example, I'm matching the "file does not exist" error with errors.Is.
+If it's that error, I have a good fallback behavior:
+use a default configuration.
+If it's not that error, then this function can't do anything else about it.
+Return it upstream and make it the caller's problem.
+They may catch and handle more of the error scenarios.
+
+---
 
 Similarly, if you need to handle structured errors, use errors.As.
-In this example, I'm handling a DNS resolution error with
-some graceful degradation if possible,
-and again, failing otherwise.
+
+In this example, I'm checking if the failure was a DNS error with errors.As.
+If it's a DNS error *and* I have a non-empty list of extant connections,
+I'll log the error and fall back to picking one of those at random.
+If it's any other error, *or* I don't have any connections,
+I again return the error upstream and make it the caller's problem.
 --
-
-// = Consume errors
-
-// * Handle the error
-// * Propagate the error
-
-// == Handle errors
-
-// * match the error with errors.Is
-// * extract information with errors.As
-// * log the error
-
-// == Propagate errors
-
-// * return as-is
-// * add context with fmt.Errorf, use %w
-// * add information with structured error

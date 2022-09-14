@@ -1,16 +1,14 @@
 = Errors
 
-* Producing
-* Consuming
+image::gopher-facepalm.png[background, size="100px 100px", position="bottom 10% left 10%"]
 
 [.notes]
 --
 Okay, let's talk about errors.
+There are two dimensions to talk about errors:
+Producing errors and consuming them.
 
-I'm going to talk about errors on two dimensions.
-Producing errors and consuming errors.
-
-Let's talk about producing first.
+Let's talk about producing them first first.
 --
 
 include::errors-produce.adoc[]
@@ -21,3 +19,14 @@ include::errors-consume.adoc[]
 * Use sentinel and structured errors when needed
 * `fmt.Errorf` and `errors.New` otherwise
 * Match with `errors.Is` and `errors.As` to handle
+
+[.notes]
+--
+So in short,
+
+* Use sentinel and structured errors when you need your leaf errors,
+  or in the case of structured errors, also your wrapper errors,
+  to be matchable with `errors.Is` and `errors.As`.
+* Use `fmt.Errorf` and `errors.New` for most other cases.
+* Match errors with `errors.Is` and `errors.As` and then handle them.
+--

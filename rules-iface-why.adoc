@@ -1,7 +1,7 @@
 [.columns.wrap]
 = !
 
-[.column.is-full]
+[.medium.column.is-full]
 Adding methods to an interface
 
 [.column]
@@ -21,7 +21,7 @@ func WriteTo(w Writer) error {
 }
 ----
 
-[.column.is-full]
+[.medium.column.is-full]
 breaks existing implementations
 
 [.column]
@@ -49,5 +49,6 @@ if err != nil {
 
 [.notes]
 --
-Adding new methods to an interface breaks existing implementations.
+When you add a new method to an existing interface,
+you break any existing implementations of the interface.
 --

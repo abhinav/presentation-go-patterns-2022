@@ -4,11 +4,12 @@ How to plan for expansion?
 
 [.notes]
 --
-So function types are fixed.
-You can't change them.
-How can you plan for expansion?
+Next. Function types are fixed.
 
-There are three primary methods.
+You can't change them.
+How can you plan for expansion.
+
+I recommend three primary methods.
 --
 
 include::pattern-func-param.adoc[leveloffset=+1]
@@ -24,17 +25,19 @@ Functional Options +
 
 [.notes]
 --
-Okay, so to plan for function expansion,
-you have parameter objects,
-result objects,
-and functional options.
+Okay, closing out the functions section.
+We have three ways to plan for function expansion.
 
-Anything else?
+* parameter objects
+* result objects
+* functional options
 
-Yes!
-If all else fails,
-you can always just write a new function.
-... except if you're inside an interface.
+Sorry, did I say three. I mean four.
 
+---
+
+If all else fails, you can always just write a new function.
+
+Except if the function is inside an interface.
 Which brings me to our next topic.
 --

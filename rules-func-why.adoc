@@ -44,8 +44,12 @@ breaks existing callers
 
 [.notes]
 --
-Again, this should be obvious but I'll explain anyway.
-You can't modify a function signature
-because every modification you make
-will break existing callers.
+This should be obvious,
+but I've included an example anyway.
+
+You cannot modify a function signature
+because every modification you make,
+whether you add a parameter like in the first snippet,
+or a new return value like in the second snippet,
+you'll break existing callers of the function.
 --

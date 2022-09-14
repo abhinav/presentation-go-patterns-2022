@@ -5,7 +5,6 @@
 Lastly there are functional options.
 --
 
-
 [.columns%auto-animate]
 == !
 
@@ -37,12 +36,23 @@ ListPosts(ctx,
 [.notes]
 --
 With functional options, you define an opaque `Option` type.
-Users cannot construct these except by using
-functions that you provide.
+I've omitted the implementation in this sample for now.
 
-The function accepts a variable number of these
+Since the `Option` type is opaque,
+users cannot construct it directly.
+Instead, you provide a fixed number of functions
+that are able to construct this object.
+In this example, it's `SkipAuthors`,
+which itself takes some arguments
+before it returns an Option value.
+
+The function that these options are for
+accepts a variable number of these
 and interprets them "internally".
-Users can pass them or not.
+I'll elaborate on that in a minute.
+
+But with this setup, users can pass this SkipAuthors option to ListPosts,
+or they can omit it, depending on their needs.
 --
 
 [.columns%auto-animate]
@@ -68,7 +78,7 @@ func ListPosts(
 ----
 
 [.column]
-[source%linenums,go,data-id=usage,highlight='|4-5,9']
+[source%linenums,go,data-id=usage]
 ----
 ListPosts(ctx)
 
@@ -84,22 +94,50 @@ ListPosts(ctx,
 
 [.notes]
 --
-You can add new options and again,
-users can pass them or not.
+You can have any number of functions that build these option objects.
+One for every different customizable option.
 
-You can go pretty wild with the number of options.
+Users will pass only the ones they care about,
+and everything else will use some default you control.
 --
 
-== Benefits
+[.columns]
+== !
 
-* Zero argument defaults
-* Lots of customization
+[.column]
+--
+Do
+
+* Zero argument default
+* Required positional arguments
+--
+
+
+[.column]
+--
+Don't
+
+* Required options
+* Mix with parameter objects
+--
 
 [.notes]
 --
-Functional options are good candidates for cases where
-there's a good zero option default behavior
-and you want freedom to add tonnes of options on top.
+With functional options,
+
+* Use them for cases where you have a good zero argument default.
+  That is, your function has a good, reasonable behavior
+  without any options being provided.
+* Do not add *required* options.
+  You can see why from me saying "required option."
+* If your function has any required parameters,
+  those parameters should not become functional options.
+  Keep them as regular positional parameters.
+* Lastly, do not mix functional options with parameter objects in the same
+  function.
+  Use one or the other.
+  Anything you wanted to make a functional option,
+  turn it into an optional field of the struct.
 --
 
 include::pattern-func-opts-impl.adoc[leveloffset=+1]
@@ -119,25 +157,41 @@ High flexibility and high boilerplate
 
 [.notes]
 --
-*Whew*.
-That was a lot.
-In summary. Functional options let you do a lot.
+Okay, that was a lot about functional options.
+In summary, functional options let you do a lot.
 
-* add new parameters or results, or
-* compose options together (like, take N options, combine them into one)
-* in general they're very flexible
-* but they also come with a lot of boilerplate
+* add new parameters
+* produce new results
+* compose options together -- this is when you take a list of Options and
+  return a new option
 
-Use them only when the boilerplate is worth it.
+---
 
-As an aside, I mentioned that there are other ways to implement functional
-options.
-For example, you can use function pointers and that's less boilerplate,
-but still quite a bit.
-But function pointers loses some nice properties of the interface based
-approach when it comes to debugging and testing
-that I don't have time to cover right now.
+But functional options also come with a lot of boilerplate.
+So use them only if the boilerplate is worth it.
 
-Just for now:
-if you're gonna do functional options, prefer the interface based approach.
+---
+
+As an aside,
+I mentioned earlier that there are multiple ways to implement functional
+options,
+and that I'm demonstrating my preferred approach.
+
+There's another approach based on function references that reduces the
+boilerplate a little,
+but I recommend you stick with the interface-based approach:
+
+* the function reference version doesn't reduce the boilerplate *that* much
+* but it loses some really good debugging and testing properties of the
+  interface based approach
+
+With the interface based approach,
+you can actually make all your options printable, which aids in debugging,
+as well as comparable, which helps in testing.
+On top of that, the interface approach also provides you more flexibility --
+options shared between functions, an upgrade path for the future,
+and probably more that I can't recall yet.
+
+So just in short:
+if you're going to use functional options, use the interface based approach.
 --

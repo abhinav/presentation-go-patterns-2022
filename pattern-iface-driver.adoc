@@ -2,10 +2,12 @@
 
 [.notes]
 --
-Okay, so I don't know if there's a real name for this pattern.
-I'm just making the name up.
+Driver interface.
 
-Let me first explain the pattern at a high level,
+Okay, so I don't know the real name for this pattern.
+I just made the name up. To be fair, all names are made up.
+
+Let me explain the pattern at a high level first,
 and then I'll demonstrate with code.
 --
 
@@ -15,15 +17,24 @@ and then I'll demonstrate with code.
 [mermaid,data-id=img]
 ....
 flowchart LR
-  subgraph Driver
+  subgraph "Driver interface"
     WriteBytes
   end
 ....
 
 [.notes]
 --
-In this pattern, you start with a "Driver" interface
-with the most minimal API.
+Under this pattern,
+you start with a Driver interface with a small but powerful interface.
+
+Powerful as in -- given that interface,
+you can build most of the other functionality you need.
+For example, if we were building an HTTP client,
+the Driver interface would be a function
+that takes a complex HTTP request object,
+and returns a complex HTTP response object.
+
+Around this interface, add a struct.
 --
 
 [%auto-animate]
@@ -32,11 +43,11 @@ with the most minimal API.
 [mermaid,data-id=img]
 ....
 flowchart LR
-  subgraph Writer
+  subgraph "Writer struct"
     WriteBytesOut[WriteBytes]
   end
 
-  subgraph Driver
+  subgraph "Driver interface"
     WriteBytes
   end
 
@@ -45,11 +56,14 @@ flowchart LR
 
 [.notes]
 --
-You build a struct around it, say, Writer,
-that provides roughly the same API.
+The struct begins with providing the same API as the driver,
+mostly just proxying calls directly to it.
 
-But then on top of that, you can add other functionality
-that depends on the small interface.
+However, the key power here is that unlike interfaces,
+you can add any number of new methods to a struct.
+
+So you can add other functionality to this struct,
+that you can implement in terms of the interface.
 --
 
 [%auto-animate]
@@ -58,12 +72,12 @@ that depends on the small interface.
 [mermaid,data-id=img]
 ....
 flowchart LR
-  subgraph Writer
+  subgraph "Writer struct"
     WriteBytesOut[WriteBytes]
     WriteString
   end
 
-  subgraph Driver
+  subgraph "Driver interface"
     WriteBytes
   end
 
@@ -72,8 +86,9 @@ flowchart LR
 
 [.notes]
 --
-This is similar to exporting a top-level function,
-except it still provides all methods on the same object.
+This is very close to what we did with the top-level function earlier,
+except users are expected to use the struct directly,
+so they still get all methods on the same object.
 
 Let me demonstrate with code quickly.
 --
@@ -99,8 +114,10 @@ func (w *Writer) WriteBytes(bs []byte) error {
 
 [.notes]
 --
-I start with a Writer struct that has the same interface
-as the driver.
+I start with a Driver and a Writer.
+The Driver implements the minimal, powerful interface.
+The Writer holds a reference to a Driver,
+and just forwards method calls over.
 --
 
 [%auto-animate]
@@ -121,15 +138,20 @@ func (w *Writer) WriteString(bs []byte) error {
 
 [.notes]
 --
-And then I do the same thing I did with the
-top-level WriteString function earlier,
-but as a method.
-
-I can support upcasting on this interface too!
+I add a new method to the Writer that relies on the existing functionality.
+Because Writer is a struct, and not an interface,
+adding this new method to it is completely backwards compatible.
 --
 
 [%auto-animate]
 == !
+
+[source,go]
+----
+type StringWriter interface {
+  WriteString(string) error
+}
+----
 
 [source%linenums,go,data-id=writer]
 ----
@@ -137,10 +159,6 @@ type Writer struct{ drv Driver }
 
 func (w *Writer) WriteBytes(bs []byte) error {
   return w.drv.WriteBytes(bs)
-}
-
-type StringWriter interface {
-  WriteString(string) error
 }
 
 func (w *Writer) WriteString(bs []byte) error {
@@ -153,7 +171,10 @@ func (w *Writer) WriteString(bs []byte) error {
 
 [.notes]
 --
-So I'm sort of able to give my users the best of both worlds.
+I can add the same upcast-to-upgrade functionality to my driver
+inside this new method.
+
+So I sort of end up with the best of both worlds.
 --
 
 == Benefits
@@ -165,13 +186,18 @@ So I'm sort of able to give my users the best of both worlds.
 [.notes]
 --
 Users that want to implement the interface
-only have to implement as little of it as they need.
+implement the smallest interface that satisfies their needs.
+If the default behavior of WriteString is enough,
+you don't have to implement it.
+Just WriteBytes should suffice.
 
-Users that want to *consume* the functionality provided by it,
-can consume the struct and get a much richer API.
+On the other side,
+users that want to *consume* the abstraction still get the rich Writer struct
+with its many convenience methods.
+They don't have to constantly call into those pesky top level functions.
 
-And lastly, these method implementations can store information on the wrapper
-object.
+And lastly, because we now have this handy Writer struct sitting around,
+we can store any amount of internal state into it.
 --
 
 == Examples
@@ -182,10 +208,18 @@ object.
 
 [.notes]
 --
-Some real world examples of this include,
+This pattern is also used pretty widely.
 
-* our very own Zap
-* Go's standard HTTP client,
-  and database/sql where most types in the SQL package
-  wrap thinner interfaces inside driver.
+* It's used inside Zap: the main Logger type actually wraps a Zap Core,
+  which defines how to serialize a single Log entry.
+  All convenience methods on the Logger -- Info, Warn, Error, etc.
+  mostly just call into that function.
+* Go's standard HTTP client wraps an HTTP RoundTripper.
+  An HTTP RoundTripper takes a complex HTTP request object,
+  and returns a complex HTTP response object.
+  (I may have described it earlier without naming it.)
+  All the convenience methods on http.Client -- Get, Post, etc.
+  all mostly just build a Request object and call the RoundTripper.
+* Lastly, database/sql -- nearly every type in that package wraps
+  the smaller interfaces defined inside the database/sql/driver package.
 --

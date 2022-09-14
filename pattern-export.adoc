@@ -5,9 +5,15 @@
 
 [.notes]
 --
-Since there's no going back when you export something,
+Exported means forever.
+
+There's not much you can do about this
+since you can't go back once published.
+
+So just be careful:
 
 * Be deliberate in your choice of what you export.
   Just because it *might* be useful does not mean it should be exported.
-* You can always export it later -- when you need it.
+* You can always export it later -- when you need it --
+  so wait until you need it.
 --

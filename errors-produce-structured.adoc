@@ -34,19 +34,32 @@ if errors.As(err, &synErr) {
 
 [.notes]
 --
-As the name suggested, structured errors on the other hand,
-are just types that implement the error interface,
+Structured errors, on the other hand,
+are just types that implement the error interface.
+These types typically contain *some* exported fields,
 that users can extract information from.
 
-Use these when there's information to expose.
-The line number at which the error occurred,
-the name of the object that's already using a resource you wanted to use,
-etc.
+* Use these when you'd like to explore richer information about the failure
+  mode. For example,
+** If you're writing a parser, and want to make the line and column number
+   of the syntax error programmatically accessible --
+   presumably to let a text editor go to that line.
+** If some uniqueness check finds a conflict,
+   and you want to expose information about the conflicting entry.
 
-If you use these,
+With structured errors,
 
-* name them by adding a "Error" suffix.
-  This is distinct from the "Err" prefix on variables.
-* *Always* use a pointer receiver. This is necessary to make these comparable.
-* Users will be able to match these with `errors.As`.
+* Suffix the name with "Error".
+  Note that this is different from the "Err" prefix on sentinel errors.
+  This, again, is a standard convention, and exceptions should be rare.
+* *Always* use a pointer receiver when defining the `Error()` method on these.
+  This makes instances of these errors comparable against each other by
+  comparing their pointer values -- this is necessary for equivalence matching.
+
+---
+
+Once you have this set up,
+users can use `errors.Is` to match specific instances of this,
+but more commonly they'll use `errors.As` to match with these by type,
+and extract information they need for their program.
 --

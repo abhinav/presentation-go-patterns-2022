@@ -14,13 +14,15 @@ methods
 
 [.notes]
 --
-Finally, interfaces are immutable.
+Lastly, interfaces are immutable.
 
-You cannot modify or remove methods.
-The reasons are the same as the last two sections.
+You cannot modify or remove methods from an interface.
+The reasons for this as the same as the last section --
+deletion or modification breaks callers.
 
-However, the third one can be surprising.
-You also cannot add methods.
+The third one can be surprising, though.
+You also cannot add new methods to a published interface.
+
 Why?
 --
 

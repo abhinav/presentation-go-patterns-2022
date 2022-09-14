@@ -43,22 +43,36 @@ No helper methods -- use functions
 
 [.notes]
 --
-Well, the first thing we do is we keep them small.
+Well, the first thing we do is preemptive.
+Keep the interface small.
 
-In this example,
-nearly every implementation of WriteString will
-have that exact same body.
-Convert the string to bytes, and use WriteBytes.
+This ties into the thing I said earlier
+about being deliberate about what you export.
+Also be deliberate about what you add to an interface.
 
-This does not need to be a method on the interface.
-Move it into a top level function.
+In this example, I have a Writer interface that defines two methods:
+WriteBytes and WriteString.
 
-Besides making your interface smaller,
-this also avoids the need to copy paste
-the same implementation of WriteString everywhere.
+Except that for the majority of cases,
+WriteString is likely to be implemented like that --
+by converting the string to a byte slice,
+and calling WriteBytes.
 
-Okay that might have you wondering,
-but what about the few cases where WriteString
-is not implemented in terms of WriteBytes?
-Don't I lose the ability to override that behavior.
+Cases where it doesn't do that are going to be rare.
+Yet, every implementation will have to have that same copy pasted snippet.
+
+A solution here is to remove the method from the interface.
+Move it to a top level function.
+
+---
+
+This makes the interface smaller,
+and avoids the need to copy paste the implementation everywhere.
+
+But this loses us the ability to customize WriteString
+for the few cases where it doesn't have that implementation,
+where it has a more optimized solution than this.
+
+Is there a way to get that ability back?
+There sure is!
 --

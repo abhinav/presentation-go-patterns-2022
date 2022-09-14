@@ -37,14 +37,22 @@ if errors.Is(err, fs.ErrNotExist) {
 
 [.notes]
 --
-Sentinel errors is just a more complicated way of saying
-global error variable.
+Sentinel errors is just another way of saying
+global error variables.
+These are just top-level vars that you export from your package
+so that users can match on them.
 
-Use these when your error message is fixed.
+* Use these when your error message is fixed.
+* Prefix the name of the top-level variable with "Err".
+  This is a standard convention -- exceptions to it should be rare.
+* Avoid overly verbose names for the error variables
+  when you're using sentinel errors.
+  Don't encode the entire message into the variable name.
+  Don't call it "err file already exists" when "ErrExist" will suffice.
 
-Just declare a top level variable named "Err" something.
-Avoid overly verbose names.
-Don't turn the message into the variable name verbatim.
+---
 
-Callers will be able to match these with the `errors.Is` API.
+Once you set this up,
+users will be able to match sentinel errors with the `errors.Is` function
+in the standard library.
 --

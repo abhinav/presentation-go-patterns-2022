@@ -11,18 +11,25 @@ Each goroutine costs *at least* 2 KB footnote:[runtime/stack.go {fn-stack-1}, {f
 
 [.notes]
 --
-First, let's talk about goroutines.
+Goroutines.
 
 We all know and love goroutines.
-They're lightweight, much more lightweight than threads.
+They're a lightweight way to write concurrent code.
 
-But they're not free.
+We should note, though,
+that they're cheap, but they're not free.
 
-On top of the runtime cost, each goroutine costs *at least* 2 kB.
-Starting Go 1.19, it can be higher -- based on the size your program's
-goroutines grow to on average.
+Besides the runtime cost,
+every goroutine costs *at least* 2 kilobytes of memory to start.
+Starting Go 1.19, this can be higher -- based on your program's
+average goroutine stack size.
 
-So let's discuss a couple best practices with goroutines.
+I'll admit, these numbers aren't terrible.
+What's 2 kilobytes among a couple gigabytes?
+But fact is, these numbers add up --
+especially in long-running production services.
+
+So let's discuss how to tame your goroutines.
 --
 
 include::practices-goroutines-lifetime.adoc[leveloffset=+1]

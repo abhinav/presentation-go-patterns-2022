@@ -2,7 +2,7 @@
 
 [.notes]
 --
-Let's cover them in order.
+Okay, let's discuss some patterns to operate inside these rules in-order.
 --
 
 include::pattern-export.adoc[]

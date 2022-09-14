@@ -2,10 +2,9 @@
 
 [.notes]
 --
-That's enough about parameters and interfaces.
-A lot of that is also just general purpose.
-
-Let's talk about some Go specific practices.
+That concludes the patterns section.
+Let's switch gears to something else.
+I'll talk about a couple Go-specific best practices.
 --
 
 include::practices-goroutines.adoc[]

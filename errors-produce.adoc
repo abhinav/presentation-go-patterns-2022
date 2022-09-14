@@ -3,17 +3,25 @@
 [%step]
 image::rootcause.gif[]
 
+image::gopher-angry.png[background, size="100px 100px", position="bottom 10% left 10%"]
+
 [.notes]
 --
-When I'm talking about producing errors,
-I'm specifically talking about "leaf" errors.
+Over here, when I talk about producing errors,
+I'm specifically thinking of "leaf" errors.
 
-This is made up terminology, but to be fair, all terminology is made up.
-So I'll stick with it.
+This is made up terminology again,
+and again, it's all made up,
+so I'll stick with it.
 
 Leaf errors are the root cause -- they do not wrap anything else.
-Yeah, leaf errors are the root.
-I know, my analogies are running out the garden.
+
+---
+
+Yeah, leaf errors are root.
+My analogies are running out the garden here.
+
+Let me demonstrate with an example.
 --
 
 [.columns]
@@ -52,15 +60,23 @@ return fmt.Errorf(
 
 [.notes]
 --
-Just as examples,
-left returns the error, possibly wrapping it,
-right *creates* a new error out of nowhere.
+Left side does not hold leaf errors.
+I'm running an operation,
+and if they fail, I'm passing that error upstream.
+Not a leaf.
+
+Right side holds leaf errors.
+It creates errors from nothing.
+It creates a problem for us to deal with
+where there wasn't one before.
 
 These are the ones I want to talk about right now.
 --
 
 [.columns]
 == Can they be handled?
+
+image::gopher-handles.png[background, size="100px 100px", position="bottom 10% left 10%"]
 
 [.column.is-half]
 --
@@ -92,18 +108,26 @@ Yes
 
 [.notes]
 --
-With leaf errors, your first consideration is,
+With leaf errors, the first thing you want to think about is,
 "can they be handled?"
 
-Or rather, do you want a caller to be able to react to this error
-besides just wrapping and/or returning it?
-Do they get any information from it that they can programmatically react to?
+Rather, do you want the caller to be able to react to this error.
+React to it in a way besides just wrapping and returning it, that is.
+Does the caller get information from knowing this error occurred,
+that they would want to react to programmatically?
 
-If the answer is no, just use vanilla fmt.Errorf or errors.New.
+---
+
+If the answer is no, just use vanilla `fmt.Errorf` and `errors.New`.
 Don't make it complicated.
 
-If the answer is yes, you have two options.
-Sentinel errors and structured errors -- depending on your needs.
+---
+
+If the answer is yes, you have two options:
+sentinel errors and structured errors.
+Each satisfies a different need.
+
+Let's talk about sentinel errors first.
 --
 
 include::errors-produce-sentinel.adoc[leveloffset=+1]

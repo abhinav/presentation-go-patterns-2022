@@ -3,7 +3,12 @@
 
 [.notes]
 --
-Not quite. The next technique you can use here is upcasting.
+It's called upcasting!
+
+With upcasting, we take a value implementing a certain interface,
+and ask it *at runtime* whether it implements another interface as well.
+
+Let me demonstrate.
 --
 
 [%auto-animate]
@@ -22,12 +27,14 @@ func WriteString(w Writer, s string) error {
 
 [.notes]
 --
-So I have my Writer interface that supports bytes,
-and my WriteString function that lets me use
-Writers to write strings.
+So I have my Writer interface with its WriteBytes method,
+and the WriteString function that converts the string to bytes,
+and delegates to the Writer.
 
-How do I add the ability for *some* implementations of the interface
-to provide an alternative WriteString implementation?
+How do I add the ability for *some* of my Writer implementations to override
+this behavior?
+
+First, define a new interface.
 --
 
 [%auto-animate]
@@ -50,15 +57,18 @@ func WriteString(w Writer, s string) error {
 
 [.notes]
 --
-First, I add a *new* interface that matches the signature of the function.
+I define a new `StringWriter` interface here.
+It has one method, WriteString, that matches the signature of my existing
+top-level WriteString function -- minus the Writer argument.
 
-This is the interface we want Writers to implement if they want to upgrade.
+This is the implement I want `Writer` implementations to also implement,
+if they want to override the behavior of the WriteString function.
 --
 
 [%auto-animate]
 == Upcast and use implementation
 
-[source%linenums,go,data-id=writer,highlight='|5-7,10-11']
+[source%linenums,go,data-id=writer]
 ----
 type Writer interface {
   WriteBytes([]byte) error
@@ -78,18 +88,30 @@ func WriteString(w Writer, s string) error {
 
 [.notes]
 --
-Next, the helper function upcasts to the new interface.
-*If* the given writer implements StringWriter, use that implementation.
-Otherwise, fall back to the WriteBytes-based implementation.
+Next, inside the WriteString function,
+I attempt to *upcast* the Writer object into a StringWriter.
+I ask it, *at runtime* whether it
+implements the WriteString method defined by StringWriter.
 
-This is a pretty simple technique, and you can see it used in many places in
-the standard library.
-As an example, let's look at the io/fs package.
+If it does, I "upgrade" the code path.
+I upgrade to the code path where I call the WriteString method
+defined by the Writer.
+
+If it does not implement that method, that is, that `ok` up there is false,
+I fall back to the standard WriteString behavior --
+convert the string to bytes and use WriteBytes.
+
+This is a pretty simple technique used all over the place
+to provide upgrade paths for interfaces.
+
+As an example, let's look at the standard library's recently added io/fs
+package.
 --
 
-[%auto-animate]
+[.columns.wrap%auto-animate]
 == io/fs
 
+[.column.is-half]
 [source,go,data-id=fs]
 ----
 type FS interface{
@@ -97,22 +119,14 @@ type FS interface{
 }
 ----
 
-[%step]
-[source,go]
+[.column.is-full%step]
+[source%linenums,go,data-id=impl]
 ----
-type StatFS interface {
-  FS
-
-  Stat(string) (FileInfo, error)
-}
-
 func Stat(fs FS, name string) (FileInfo, error) {
-  if sf, ok := fs.(StatFS); ok {
-    return sf.Stat(name)
-  }
-
   f, err := fs.Open(name)
-  // ...
+  if err != nil {
+    return nil, err
+  }
   return f.Stat()
 }
 ----
@@ -120,15 +134,23 @@ func Stat(fs FS, name string) (FileInfo, error) {
 [.notes]
 --
 io/fs defines a simple FS interface.
-It can only open a file and nothing else.
+It defines the ability to open a file.
+Nothing else.
 
-However, given that ability, you can "stat" a file -- inspect it -- with an
-optional upgrade where you don't have to open it to stat it.
+---
+
+Given that ability, I can implement a simple `Stat` function to inspect a file:
+open the file and Stat it.
+
+But what if my filesystem implementation is smarter,
+and has the ability to stat a file without opening it?
+For that, io/fs defines a StatFS interface and supports upgrading to it.
 --
 
-[%auto-animate]
+[.columns.wrap%auto-animate]
 == io/fs
 
+[.column.is-half]
 [source,go,data-id=fs]
 ----
 type FS interface{
@@ -136,65 +158,131 @@ type FS interface{
 }
 ----
 
-[source,go]
+[.column.is-half]
+[source,go,data-id=upfs]
+----
+type StatFS interface {
+  FS
+
+  Stat(string) (FileInfo, error)
+}
+----
+
+[.column.is-full]
+[source%linenums,go,data-id=impl]
+----
+func Stat(fs FS, name string) (FileInfo, error) {
+  if sf, ok := fs.(StatFS); ok {
+    return sf.Stat(name)
+  }
+
+  f, err := fs.Open(name)
+  if err != nil {
+    return nil, err
+  }
+  return f.Stat()
+}
+----
+
+[.notes]
+--
+If a file system implements the StatFS interface,
+the `fs.Stat` function will use the Stat method defined by it.
+
+io/fs does this for most of the filesystem-based functionality it privies.
+For example, here's fs.ReadFile.
+--
+
+[.columns.wrap%auto-animate]
+== io/fs
+
+[.column.is-half]
+[source,go,data-id=fs]
+----
+type FS interface{
+  Open(string) (File, error)
+}
+----
+
+[.column.is-half]
+[source,go,data-id=upfs]
 ----
 type ReadFileFS interface {
   FS
 
   ReadFile(string) ([]byte, error)
 }
+----
 
+[.column.is-full]
+[source%linenums,go,data-id=impl]
+----
 func ReadFile(fs FS, name string) ([]byte, error) {
   if rf, ok := fs.(ReadFileFS); ok {
     return rf.ReadFile(name)
   }
 
   f, err := fs.Open(name)
-  // ...
+  if err != nil {
+    return nil, err
+  }
   return io.ReadAll(f)
 }
 ----
 
 [.notes]
 --
-You can read from the file,
-again, with an optional upgrade path.
+If the filesystem provides a ReadFile method, use it.
+Otherwise, open the file and read from it.
 
-Note that this is not the actual implementation,
-but you should get the idea.
-
-And you can do other things -- I'm not gonna list all here.
+Note that the implementation for reading from a file is not quite that,
+but it's what fits on this slide.
 --
 
+[.columns]
 == Summary
 
+[.column]
+.Pros
 * DRY implementation
-* Guaranteed fallback behavior
+* Upgrade as needed
+
+[.column%step]
+.Cons
 * No internal state
-* Wrapping can break overrides
+* Wrapping breaks overrides
 
 [.notes]
 --
-In summary, besides keeping your interface small,
+So, in summary, besides helping keeping your interface small,
 this pattern
 
 * Keeps your implementation DRY:
-  don't implement this method if you don't need to override its behavior.
-  Kinda like method inheritance, but not really.
-* You're guaranteed to have a fallback behavior
-  if you don't override.
-* However, these methods cannot access or write any internal state.
-  Like, if your WriteString wanted to, say, pool the byte slices it was using
-  in a field somewhere, it cannot do that because there's nowhere to place that
-  field.
-* Lastly, the biggest weakness of this system is that if someone wraps an
-  implementation of an interface, and they do not include the optional upgrade
-  methods, the upgrade will be lost -- callers will always use the fallback
-  behavior.
+  you don't have to implement a method if you don't need to override its
+  behavior. You have a guaranteed fallback behavior.
+* You can add the ability to upcast to an interface *as needed*.
+  You don't need to front load them.
+  Add new upgrade paths as they become necessary.
 
-Overall, this pattern is still great, and I suggest using it for small
-interfaces with not too many upgrades.
+But it's not all pros. There are some limitations.
 
-But there are places where this doesn't fit.
-That's where the next one comes in.
+* With this pattern, you do not have the ability to store any internal state
+  from the helper function since you're operating strictly on interface values.
+  There's no object for you to put private information inside.
+** For example, as a convoluted use case,
+   if my WriteString function earlier wanted to cache the byte slices it was
+   generating, or keep count of the total number of bytes it had written,
+   it would not be able to do that because it would have nowhere to store that
+   information.
+* The second, more significant limitation of this pattern is that if someone
+  wraps my Writer implementation, but neglects to add the WriteString method
+  which defines the upgrade path, then that optimization is lost.
+  Any calls to the WriteString function with the wrapped Writer will use the
+  fallback behavior because the wrapped Writer doesn't provide the WriteString
+  method upgrade.
+
+Overall, this pattern is still great.
+Use it for small, simple interfaces that won't need too much state.
+
+For other cases, there's another option.
 --

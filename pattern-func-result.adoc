@@ -35,17 +35,26 @@ Use a `struct`.
 
 [.notes]
 --
-Result objects are the analog of parameter objects
-for returning values.
-They're equally simple.
-A struct that exists solely to hold values returned by a function.
-All except the `error`, which should remain the last output of your function.
+Result objects.
+These are the other side of parameter objects.
+Again, they're just another way of say a struct to hold the results.
 
-You can add new fields to this struct -- new things your function needs to
-return,
-and that's completely backwards compatible.
+The result object of a function exists similarly to hold the values returned by
+it and is similarly exclusive.
 
-Similar rule of thumb applies here.
-Need to produce more than two things?
-Return a struct.
+Again, all results except the `error`.
+If your function returns an error,
+keep that outside the result object,
+leave it as the last return value of your function.
+
+Add new return values to your function if necessary,
+by adding new fields to the struct.
+This, too, is completely backwards compatible.
+
+---
+
+A similar rule of thumb applies here,
+but with a different number.
+If your function needs to return more than two things,
+use a result object.
 --

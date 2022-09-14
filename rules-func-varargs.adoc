@@ -38,10 +38,10 @@ func Process(
 }
 ----
 
-[step=4]
+[.medium, step=3]
 Breaks function references
 
-[step=3]
+[step=2]
 [source,go]
 ----
 Process(ctx, ListPosts)
@@ -53,14 +53,20 @@ Process(ctx, ListPosts)
 
 [.notes]
 --
-Aha, some of you might be thinking.
-What if I add variadic arguments to a function?
-Surely, that's a backwards compatible change?
-Surely, that won't break anyone.
+Aha, you might say. What about variadic arguments?
+Surely, you can add variadic arguments to an existing function,
+and not break anyone?
+Surely, this is fine?
 
-Wrong.
+Nope!
+
 Go supports function references.
-When you pass a function reference,
+
+The Process function over here accepts a function
+matching the signature of `ListPosts`.
+When you pass in a function as an argument,
 the type is usually inferred.
-Changing that type is a breaking change.
+
+By adding variadic arguments to the function,
+we change its type, and break uses like this.
 --

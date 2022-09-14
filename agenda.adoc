@@ -1,5 +1,7 @@
 = Agenda
 
+image::gopher-top-right.png[background, size="100px 100px", position="bottom 10% left 10%"]
+
 * Rules
 * Why
 * Patterns
@@ -7,14 +9,14 @@
 
 [.notes]
 --
-The agenda for this talk is roughly this,
+We'll talk about a couple things today.
 
 * First, we'll discuss some rules we're operating under
-  for good, maintainable packages and libraries,
-  and why those rules make sense.
-* Next, we'll talk about some good patterns we can use to operate
-  inside these rules.
-* After that, we'll discuss some best practices.
+  for writing good, maintainable packages and libraries.
+* We'll talk about why those rules make sense.
+* After that, we'll discuss some patterns we can use to operate
+  within those rules.
+* Last, we'll discuss some general best practices.
 
 Okay, let's get started.
 --

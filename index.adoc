@@ -24,16 +24,13 @@ Abhinav Gupta
 [.small.text-right]
 {revdate}
 
-[.attribution]
-Gopher credit: https://github.com/egonelbre/gophers[egonelbre/gophers]
-
 include::intro.adoc[leveloffset=+1]
 include::agenda.adoc[leveloffset=+1]
 include::rules.adoc[leveloffset=+1]
 include::patterns.adoc[leveloffset=+1]
 include::practices.adoc[leveloffset=+1]
 
-[.columns]
+[.columns.wrap]
 == Conclusion
 
 [.column.medium]
@@ -56,19 +53,30 @@ Do
 
 [.notes]
 --
+That marks the end of the content I had.
+
 In conclusion:
 
-* Don't export something until it's necessary
-* When you do export it, plan for expansion:
-** use parameter objects, result objects, functional options, upcasting, driver
-   interfaces, everything else to make sure you don't break your exported
-   functions or interfaces.
-* Don't leak goroutines -- control their lifetime
-* Don't write redundant error messages
-* Do expose errors that should be handled, and handle them properly
+* Don't export something until you absolutely need to.
+* When you export it, plan for it to expand:
+  use the patterns and tools I talked about earlier.
+* Don't leak goroutines. Control their lifetimes.
+* Don't write noisy error messages.
+* Expose meaningful error vars and types for proper handling.
 --
 
+[.columns]
 == Discussion
+
+[.column.stretch]
+image::gopher-dance-long-3x.gif[]
+
+[.column]
+image::gopher-dance-long-3x.gif[]
+
+[.attribution]
+Gopher image credits: https://github.com/egonelbre/gophers[egonelbre/gophers]
+
 
 [.notes]
 --

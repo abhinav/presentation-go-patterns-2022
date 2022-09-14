@@ -8,14 +8,20 @@
 . {rule-functions}
 . {rule-interfaces}
 
+image::gopher-handles.png[background, size="100px 100px", position="bottom 10% left 10%"]
+
 [.notes]
 --
 First, let's establish some rules for writing code.
 These rules motivate the designs we'll discuss later.
 
-These rules apply only to libraries,
-but we tend to write most our code to meet these constraints.
-If it's not part of core application logic, treat it like a library.
+These rules mostly apply to libraries,
+but you can apply them to any Go package
+to build higher quality shareable packages.
+
+My team aims to meet these constraints in most of our code.
+If it's not part of core application logic, treat it like a library,
+and the overall application will tend towards higher quality.
 
 The rules are:
 
@@ -40,11 +46,11 @@ include::rules-iface.adoc[]
 --
 So to summarize, here are the rules again.
 
-* Don't take away something you've given
+* Don't take away something once given
 * Don't change function signatures
 * Don't change *anything* about interfaces
 
 Okay, so we have some rules.
-How do we operate inside them?
+How do we build around them?
 What patterns can we use to make sure we don't break them?
 --
