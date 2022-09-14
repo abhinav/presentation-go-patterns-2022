@@ -15,6 +15,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    env:
+      SPEAKER_NOTES: 1
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3

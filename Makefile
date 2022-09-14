@@ -1,5 +1,6 @@
 SHELL := /bin/bash
 
+SPEAKER_NOTES ?=
 ASCIIDOCTOR = bundle exec asciidoctor-revealjs
 ASCIIDOCTOR_ARGS = \
 	   -r asciidoctor-diagram \
@@ -7,6 +8,10 @@ ASCIIDOCTOR_ARGS = \
 	   -a imagesdir=images \
 	   -a docinfo=shared \
 	   -t
+
+ifneq ($(SPEAKER_NOTES),)
+ASCIIDOCTOR_ARGS += -a revealjs_showNotes=separate-page
+endif
 
 index.html: index.adoc
 	$(ASCIIDOCTOR) $(ASCIIDOCTOR_ARGS) index.adoc
