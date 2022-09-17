@@ -1,9 +1,11 @@
 SHELL := /bin/bash
 
 SPEAKER_NOTES ?=
+GOOGLE_ANALYTICS_ID ?=
 ASCIIDOCTOR = bundle exec asciidoctor-revealjs
 ASCIIDOCTOR_ARGS = \
 	   -r asciidoctor-diagram \
+	   -r ./lib/analytics.rb \
 	   -a mmdc=$(shell pwd)/node_modules/.bin/mmdc \
 	   -a imagesdir=images \
 	   -a docinfo=shared \
@@ -11,6 +13,10 @@ ASCIIDOCTOR_ARGS = \
 
 ifneq ($(SPEAKER_NOTES),)
 ASCIIDOCTOR_ARGS += -a revealjs_showNotes=separate-page
+endif
+
+ifneq ($(GOOGLE_ANALYTICS_ID),)
+ASCIIDOCTOR_ARGS += -a google-analytics-id=$(GOOGLE_ANALYTICS_ID)
 endif
 
 index.html: index.adoc

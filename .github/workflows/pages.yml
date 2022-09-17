@@ -17,6 +17,7 @@ jobs:
 
     env:
       SPEAKER_NOTES: 1
+      GOOGLE_ANALYTICS_ID: G-T9PBV3BY7B
 
     steps:
       - name: Checkout
