@@ -14,8 +14,7 @@ Let's talk about writing Go.
 Hey folks, I'm Abhinav.
 
 I lead the Go Platform team.
-We own things like Fx, Glue, CFF2, Zap, etc.
+We own things like Fx, Zap, etc.
 
 Today I'll talk to you about writing good Go.
 --
-
