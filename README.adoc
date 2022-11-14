@@ -1,0 +1,37 @@
+= Go Patterns and Practices
+
+This repository contains source code for a presentation
+that I gave on September 2022.
+
+The rendered slides are available at
+https://abhinav.github.io/presentation-go-patterns-2022/.
+
+== Building
+
+Build the slides from source by running:
+
+[source,console]
+----
+$ make site
+----
+
+Build them with speaker notes on the side with:
+
+[source,console]
+----
+$ SPEAKER_NOTES=1 make site
+----
+
+== License
+
+:url-license: https://creativecommons.org/licenses/by-sa/4.0/
+
+image::https://i.creativecommons.org/l/by-sa/4.0/88x31.png[alt="CC-BY-SA-4.0", link={url-license}]
+
+This work is licensed under a
+{url-license}[Creative Commons Attribution-ShareAlike 4.0 International License].
+
+== Credits
+
+All Gopher images used in the slides came from
+https://github.com/egonelbre/gophers[egonelbre/gophers].
