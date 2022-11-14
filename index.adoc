@@ -65,16 +65,19 @@ In conclusion:
 * Expose meaningful error vars and types for proper handling.
 --
 
-[.columns]
+[.columns.wrap]
 == Discussion
 
-[.column.stretch]
+[.column.is-half]
 image::gopher-dance-long-3x.gif[]
 
-[.column]
+[.column.is-half]
 image::gopher-dance-long-3x.gif[]
 
-[.attribution]
+[.column.is-half]
+image::https://i.creativecommons.org/l/by-sa/4.0/88x31.png[alt="CC-BY-SA-4.0", link={url-license}]
+
+[.column.is-half.attribution]
 Gopher image credits: https://github.com/egonelbre/gophers[egonelbre/gophers]
 
 
