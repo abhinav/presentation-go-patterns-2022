@@ -1,7 +1,7 @@
 SHELL := /bin/bash
 
 SPEAKER_NOTES ?=
-GOOGLE_ANALYTICS_ID ?=
+CLOUDFLARE_WA_TOKEN ?=
 ASCIIDOCTOR = bundle exec asciidoctor-revealjs
 ASCIIDOCTOR_ARGS = \
 	   -r asciidoctor-diagram \
@@ -15,8 +15,8 @@ ifneq ($(SPEAKER_NOTES),)
 ASCIIDOCTOR_ARGS += -a revealjs_showNotes=separate-page
 endif
 
-ifneq ($(GOOGLE_ANALYTICS_ID),)
-ASCIIDOCTOR_ARGS += -a google-analytics-id=$(GOOGLE_ANALYTICS_ID)
+ifneq ($(CLOUDFLARE_WA_TOKEN),)
+ASCIIDOCTOR_ARGS += -a cloudflare-wa-token=$(CLOUDFLARE_WA_TOKEN)
 endif
 
 index.html: index.adoc
