@@ -1,18 +1,14 @@
-class GoogleAnalyticsDocinfoProcessor < Asciidoctor::Extensions::DocinfoProcessor
+class CloudflareWebAnalyticsProcessor < Asciidoctor::Extensions::DocinfoProcessor
   use_dsl
-  at_location :head
+  at_location :footer
   def process document
-    return unless (ga_account_id = document.attr 'google-analytics-id')
-    %(<script async src="https://www.googletagmanager.com/gtag/js?id=#{ga_account_id}"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', '#{ga_account_id}');
-    </script>)
+    return unless (cf_wa_token = document.attr 'cloudflare-wa-token')
+    %(<!-- Cloudflare Web Analytics -->
+    <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "#{cf_wa_token}"}'></script>
+    <!-- End Cloudflare Web Analytics -->)
   end
 end
 
 Asciidoctor::Extensions.register do
-  docinfo_processor GoogleAnalyticsDocinfoProcessor
+  docinfo_processor CloudflareWebAnalyticsProcessor
 end

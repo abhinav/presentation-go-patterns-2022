@@ -17,7 +17,7 @@ jobs:
 
     env:
       SPEAKER_NOTES: 1
-      GOOGLE_ANALYTICS_ID: G-JS3R8KGQQQ
+      CLOUDFLARE_WA_TOKEN: 085b42f4381f4b8999051fc40a656369
 
     steps:
       - name: Checkout
