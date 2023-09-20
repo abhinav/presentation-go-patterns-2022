@@ -4,7 +4,7 @@ This repository contains source code for a presentation
 that I gave on September 2022.
 
 The rendered slides are available at
-https://abhinav.github.io/presentation-go-patterns-2022/.
+https://abhinav.github.io/go-patterns-2022/.
 
 == Building
 
